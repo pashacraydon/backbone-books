@@ -1,0 +1,43 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Booklet</title>
+</head>
+<body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+  <script src="http://ajax.cdnjs.com/ajax/libs/underscore.js/1.1.6/underscore-min.js"></script>
+  <script src="http://ajax.cdnjs.com/ajax/libs/backbone.js/0.3.3/backbone-min.js"></script>
+
+
+  <script src="js/booklet.js"></script>
+
+  <div id="main">
+    <div id="header" class="box">
+      <h1>Booklet</h1>
+    </div>
+
+      <ul id="books"></ul>
+  <script type="text/template" id="books_template">
+    <li>
+      <h3>
+        <img src="<%= smallThumbnail %>" alt="<%= title %>" width="45" />
+        <div>
+          <a href="http://twitter.com/<%= from_user %>" title="<%= title %>"><%= title %></a>
+        </div>
+      </h3>
+      <p><%= description %>
+    </li>
+  </script>
+
+  <form id="search_form" action="" method="POST">
+      <label for="q">Search for Books!!</label>
+      <input autocomplete="off" autofocus="true" type="text" name="q" id="q" value="php" />
+      <input type="submit" id="button" value="Go" />
+  </form>
+
+  </div>
+
+</body>
+</html>
