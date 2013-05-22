@@ -1,0 +1,51 @@
+body {
+	font-family: Georgia;
+	font-size: 110%;
+	line-height: 1.5em;
+}
+
+h1 {
+	line-height: 1.4em;
+	margin-top: 10px;
+}
+
+#books li.book {
+	width: 50%;
+	margin: 30px auto 20px;
+	border: 1px solid #EEE;
+	padding: 20px;
+	list-style-type: none;
+	min-height: 400px;
+	-webkit-box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+	box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+}
+
+li.book img {
+	float: left;
+	margin: 10px 20px 0 0;
+}
+
+.description {
+	margin-left: 200px;
+	color: #666;
+}
+
+.group.image {
+	float: left;
+	width: 200px;
+}
+
+.meta {
+    margin: 10px 0 0;
+    padding: 20px 0 0;
+	font-size: 11px;
+	clear: left;
+}
+
+.meta li {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	line-height: 1.5em;
+	font-family: arial;
+}

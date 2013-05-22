@@ -4,40 +4,59 @@
 <head>
   <meta charset="utf-8">
   <title>Booklet</title>
-</head>
-<body>
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
-  <script src="http://ajax.cdnjs.com/ajax/libs/underscore.js/1.1.6/underscore-min.js"></script>
-  <script src="http://ajax.cdnjs.com/ajax/libs/backbone.js/0.3.3/backbone-min.js"></script>
+    <link rel="stylesheet" href="css/booklet.css">
+    <!-- Libraries: -->
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.2.2/underscore-min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.5.3/backbone-min.js"></script>
+  </head>
+  <body>
+
+  <form id="search_form" action="" method="POST">
+      <label for="q">Search for Books</label>
+      <input autocomplete="off" autofocus="true" type="text" name="q" id="search_input" value="" />
+      <input type="submit" id="search_button" value="Go" />
+  </form>
+
+  <form>
+      <select onChange="if(this.selectedIndex!=0) self.location=this.options[this.selectedIndex].value">
+        <option value="" selected>Browse
+        <option value="#browse/computers">Computers
+        <option value="#browse/python">Python
+      </select>
+  </form> 
 
 
-  <script src="js/booklet.js"></script>
+  <ul id="books">
+  </ul>
 
-  <div id="main">
-    <div id="header" class="box">
-      <h1>Booklet</h1>
-    </div>
-
-      <ul id="books"></ul>
   <script type="text/template" id="books_template">
-    <li>
-      <h3>
-        <img src="<%= smallThumbnail %>" alt="<%= title %>" width="45" />
-        <div>
-          <a href="http://twitter.com/<%= from_user %>" title="<%= title %>"><%= title %></a>
-        </div>
-      </h3>
-      <p><%= description %>
+    <li class='<%= id %> book'>
+      <h1><a href="<%= selfLink %>" title=""><%= volumeInfo.title %></a></h1>
+
+      <div class="group image">
+      <% if (typeof(volumeInfo.imageLinks.thumbnail) != "undefined") { %>
+        <a class="detail" href="<%= accessInfo.webReaderLink %>" target="_blank"><img src='<%= volumeInfo.imageLinks.thumbnail %>' /></a>
+      <% } %>
+        <ul class="meta">
+          <li>Published: <%= volumeInfo.publishedDate %> </li>
+          <li>Publisher: <a href="#browse/publisher/<%= volumeInfo.publisher %>"><%= volumeInfo.publisher %></a> </li>
+          <li>Category: <a href="#browse/subject/<%= volumeInfo.categories %>"><%= volumeInfo.categories %></a> </li>
+        </ul>
+      </div>
+
+      <p class="description"><%= volumeInfo.description %></p>
     </li>
   </script>
 
-  <form id="search_form" action="" method="POST">
-      <label for="q">Search for Books!!</label>
-      <input autocomplete="off" autofocus="true" type="text" name="q" id="q" value="php" />
-      <input type="submit" id="button" value="Go" />
-  </form>
+  <script type="text/template" id="book_detail_template">
+    <div class="detail-view-template">
+          <iframe src="<%= accessInfo.webReaderLink %>&output=embed"></iframe>
+    </div>
+  </script>
 
-  </div>
+
+    <script src="js/booklet.js"></script>
 
 </body>
 </html>
