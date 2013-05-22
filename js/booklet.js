@@ -29,7 +29,7 @@
 
   /* Search the API */
   var SearchView = Backbone.View.extend({
-      el: $("#search_form"),
+      el: $("#search_input"),
 
       search: function( e ){
         e.preventDefault();  //Prevent default behavior
@@ -56,8 +56,28 @@
             }
         });
       },
+      autocomplete: function( e ) {
+        var query = $('#search_input').val();
+        $( "#search_input" ).autocomplete({
+            source: function( request, response ) {
+              url = 'https://www.googleapis.com/books/v1/volumes?q='+query+'&maxResults=10&key='+api_key+'&fields=totalItems,items(accessInfo,volumeInfo)';
+              $.getJSON(url + '&callback=?', function(data) {
+                 var dropdown = [];
+                 for(var i in data.items) {
+                    var ele = {};
+                    ele = '<img src='+data.items[i].volumeInfo.imageLinks.smallThumbnail+' /> '+data.items[i].volumeInfo.title;
+                    dropdown.push(ele);
+                   // console.log(data.items[i].volumeInfo);
+                  }
+                 response(dropdown);
+                 console.log(dropdown);
+              });
+            }
+        });
+      },
       events: {
-        "submit": "search"  //Initiate search function, when the form with id #search_form (el) is submitted
+        "submit": "search", //Initiate search function, when the form with id #search_form (el) is submitted
+        "keyup": "autocomplete"
       }
   });
 
@@ -98,6 +118,9 @@
   var app = new AppRouter();
 
   Backbone.history.start(); 
+
+    $(document).ready(function() {
+  });
 
 
 })(jQuery);
