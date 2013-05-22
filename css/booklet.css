@@ -9,24 +9,51 @@ h1 {
 	margin-top: 10px;
 }
 
+ul, ul li {
+	margin: 0;
+}
+
+#main {
+   max-width: 55%;
+   width: 100%;
+   margin: 0 auto;
+}
+.boot-title {
+	line-height: 1.3em;
+	font-size: 0.8em;
+	width: 128px;
+}
+
 #books li.book {
-	width: 50%;
-	margin: 30px auto 20px;
-	border: 1px solid #EEE;
-	padding: 20px;
+	width: 128px;
+	float: left;
+	padding: 5px 15px 0;
+	border: 1px solid #ddd;
 	list-style-type: none;
-	min-height: 400px;
+	min-height: 350px;
 	-webkit-box-shadow: 0 2px 3px rgba(0,0,0,0.1);
 	box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	margin: 10px 10px 10px;
+	position: relative;
+}
+
+.reader {
+	position: absolute;
+	bottom: 5px;
+	right: 5px;
 }
 
 li.book img {
 	float: left;
-	margin: 10px 20px 0 0;
+	margin: 10px 20px 10px 0;
+	border: 1px solid #EEE;
 }
 
 .description {
-	margin-left: 200px;
+	line-height: 1.5em;
+    font-size: 0.8em;
 	color: #666;
 }
 
@@ -36,16 +63,39 @@ li.book img {
 }
 
 .meta {
-    margin: 10px 0 0;
-    padding: 20px 0 0;
+    margin: 5px 0 0;
+    padding: 0;
 	font-size: 11px;
 	clear: left;
 }
 
-.meta li {
+.meta {
 	list-style-type: none;
-	margin: 0;
 	padding: 0;
 	line-height: 1.5em;
 	font-family: arial;
+	width: 130px;
 }
+
+
+/* Search */
+#search_form input#search_input {
+	padding: 10px 30px 10px 20px;
+	max-width: 500px;
+	width: 100%;
+	font-size: 1.25em;
+	line-height: 1.5em;
+	height: 50px;
+}
+
+#search_form  #search_button {
+	padding: 25px;
+	position: relative;
+	top: -5px;
+}
+
+#search_form {
+	width: 50%;
+	margin: 60px auto 0;
+}
+

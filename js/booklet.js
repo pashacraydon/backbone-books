@@ -14,6 +14,7 @@
            {
                "imageLinks": [
                   {
+                    "smallThumbnail": "",
                     "thumbnail": "stuff"
                   }
                ]
@@ -29,7 +30,7 @@
 
   /* Search the API */
   var SearchView = Backbone.View.extend({
-      el: $("#search_input"),
+      el: $("#search_form"),
 
       search: function( e ){
         e.preventDefault();  //Prevent default behavior
@@ -48,6 +49,7 @@
             dataType: 'jsonp',
             success: function(data) {
               for(var i in data.items) {
+                data.items[i].volumeInfo.title = data.items[i].volumeInfo.title.length > 30 ? data.items[i].volumeInfo.title.substr(0,30) + '...' : data.items[i].volumeInfo.title;
                 var book = new BookModel(data.items[i]);
                 console.log(data.items[i]);
                 var bookView = new BookView({ model: book });
@@ -64,14 +66,21 @@
               $.getJSON(url + '&callback=?', function(data) {
                  var dropdown = [];
                  for(var i in data.items) {
+                    var subtitle = typeof data.items[i].volumeInfo.subtitle != "undefined" ? ': '+data.items[i].volumeInfo.subtitle : '';
                     var ele = {};
-                    ele = '<img src='+data.items[i].volumeInfo.imageLinks.smallThumbnail+' /> '+data.items[i].volumeInfo.title;
+                    ele = data.items[i].volumeInfo.title+subtitle;
                     dropdown.push(ele);
                    // console.log(data.items[i].volumeInfo);
                   }
                  response(dropdown);
                  console.log(dropdown);
               });
+            },
+            focus: function( event, ui ) {
+                $('#books').html(''); //Remove previous search
+                var search = new SearchView();
+                search.browse(ui.item.value);
+                //console.log(ui.item.value);
             }
         });
       },
@@ -89,6 +98,7 @@
     }
   });
 
+
   /* Some pages */
   var AppRouter = Backbone.Router.extend({
     routes: {
@@ -99,7 +109,7 @@
     },
     index: function() {
       var search = new SearchView();
-      search.browse('python');
+      //search.browse('python');
     },
     browse: function( query ) {
       var search = new SearchView();
@@ -120,7 +130,7 @@
   Backbone.history.start(); 
 
     $(document).ready(function() {
-  });
+      });
 
 
 })(jQuery);
