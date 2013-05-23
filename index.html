@@ -28,16 +28,15 @@
 </div>
 
   <script type="text/template" id="books_template">
-    <li class='<%= id %> book'>
+    <li class='book'>
       <div class="group image">
-        <a class="detail" href="<%= accessInfo.webReaderLink %>" target="_blank"><img src="<%= (volumeInfo.imageLinks.thumbnail ? volumeInfo.imageLinks.thumbnail : 'http://placehold.it/128x158/eeeeee/999999') %>" /></a>
-        <h3 class="boot-title"><a href="<%= selfLink %>" title=""><%= volumeInfo.title %></a></h3>
-        <p class="meta"> Published by <a href="#browse/publisher/<%= volumeInfo.publisher %>"><%= volumeInfo.publisher %></a>. 
-        Under, <a href="#browse/subject/<%= volumeInfo.categories %>"><%= volumeInfo.categories %></a>
+        <img src="<%= (volumeInfo.imageLinks.thumbnail ? volumeInfo.imageLinks.thumbnail : 'http://placehold.it/128x158/eeeeee/999999') %>" />
+        <h3 class="boot-title"><%= volumeInfo.title %></h3>
+        <p class="meta"> <%= (volumeInfo.publisher ? 'Published by ' : '') %> <a href="#browse/publisher/<%= volumeInfo.publisher %>"><%= volumeInfo.publisher %></a> 
+        <%= (volumeInfo.categories ? 'Under, ' : '') %> <a href="#browse/subject/<%= volumeInfo.categories %>"><%= volumeInfo.categories %></a>
         </p>
         <a class="btn btn-small reader" href="<%= accessInfo.webReaderLink %>" target="_blank">Read now</a>
       </div>
-
     </li>
   </script>
 

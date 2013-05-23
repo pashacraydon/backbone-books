@@ -16,7 +16,7 @@ ul, ul li {
 }
 
 #main {
-   max-width: 55%;
+   max-width: 720px;
    width: 100%;
    margin: 0 auto;
 }
@@ -50,6 +50,10 @@ li.book img {
 	float: left;
 	margin: 10px 20px 10px 0;
 	border: 1px solid #EEE;
+}
+
+li.book {
+	display: none;
 }
 
 .description {
@@ -96,8 +100,9 @@ li.book img {
 }
 
 #search_form {
-	width: 50%;
+	width: 720px;
 	margin: 60px auto 0;
+	text-align: center;
 }
 
 /* Autocomplete */

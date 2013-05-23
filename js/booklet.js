@@ -1,7 +1,9 @@
 (function($) {
 
   var api_key = 'AIzaSyBhBph_ccmIlFn9YSrvhCE_8zrYxazyqJ8';
-
+  var num_books = 1;
+   // var api_key = 'AIzaSyAUpierWu7ydjKsa2141jS55CCnqu7JXZo';
+  //  var api_key = 'AIzaSyB4ro-tnpGwr6WXHs3_wBF3hKFnXQv8pfo';
 
   /* Initiate a Book Model */
   window.BookModel = Backbone.Model.extend({
@@ -16,7 +18,7 @@
                "imageLinks": [
                   {
                     "smallThumbnail": "",
-                    "thumbnail": "stuff"
+                    "thumbnail": ""
                   }
                ]
            }
@@ -49,7 +51,7 @@
           //Query the Google Books API and return json
           $.ajax({
            url: 'https://www.googleapis.com/books/v1/volumes?',
-            data: 'q='+encodeURIComponent(query)+'&startIndex='+index+'&maxResults=1&key='+api_key+'&fields=totalItems,items(id,accessInfo, selfLink,volumeInfo)',
+            data: 'q='+encodeURIComponent(query)+'&startIndex='+index+'&maxResults='+num_books+'&key='+api_key+'&fields=totalItems,items(id,accessInfo, selfLink,volumeInfo)',
             dataType: 'jsonp',
             success: function(data) {
               for(var i in data.items) {
@@ -63,13 +65,13 @@
               }
             }
           });
-          this.morebutton(query, index='0');
+          this.morebutton(query, index);
       },
       autocomplete: function( e ) {
         var query = $('#search_input').val();
         $( "#search_input" ).autocomplete({
             source: function( request, response ) {
-              url = 'https://www.googleapis.com/books/v1/volumes?q='+encodeURIComponent(query)+'&maxResults=0&key='+api_key+'&fields=totalItems,items(accessInfo,volumeInfo)';
+              url = 'https://www.googleapis.com/books/v1/volumes?q='+encodeURIComponent(query)+'&maxResults=2&key='+api_key+'&fields=totalItems,items(accessInfo,volumeInfo)';
               $.getJSON(url + '&callback=?', function(data) {
                  var dropdown = [];
                  for(var i in data.items) {
@@ -91,8 +93,10 @@
         });
       },
       morebutton: function( query, index ) {
-         var morebtn = '<a class="btn btn-large btn-info more-button" href="#/scroll/'+query+'/'+index+'">Show More</a>';
-         if (index == '0') { $('#main').append(morebtn);  } else {  $('.more-button').replaceWith(morebtn);  }
+         $('.wrap-btn').remove();
+         var countIndex = parseInt(index) + parseInt(num_books);
+         var morebtn = '<div class="wrap-btn" style="text-align: center;"><a class="btn btn-large btn-info more-button" href="#scroll/'+encodeURIComponent(query)+'/'+countIndex+'">Show More</a></div>';
+         $('#main').append(morebtn);
       },
       morebooks: function( query, index ) {
          this.ajax(query, index);
@@ -103,12 +107,32 @@
       }
   });
 
-  /* Render the API with underscore.js templating */
+
   var BookView = Backbone.View.extend({
+    el: $("#books"),
+
+    initialize: function() {
+
+    },
     render: function() {
       var book = _.template( $("#books_template").html(), this.model.toJSON());
       $("#books").append(book);
-    }
+      $(".book").fadeIn(200);
+    },
+    detail: function() {
+        $.ajax({
+          url: 'https://www.googleapis.com/books/v1/volumes/'+this.model.id,
+          dataType: 'jsonp',
+          data: 'fields=volumeInfo/imageLinks&key='+api_key,
+          success: function (data) {
+               alert(data.volumeInfo)
+               console.log(data);
+          }
+        });
+     },
+     events: {
+        'click .book': 'detail'
+     }
   });
 
 
@@ -138,9 +162,8 @@
       search.browse('+inpublisher:'+query);
     },
     scroll: function( query, id ) {
-      var countIndex = ++id;
       var search = new SearchView();
-      search.morebooks(query, countIndex);
+      search.morebooks(query, id);
     }
   });
 
