@@ -1,8 +1,7 @@
 (function($) {
 
- // var api_key = 'AIzaSyBhBph_ccmIlFn9YSrvhCE_8zrYxazyqJ8';
-    var api_key = 'AIzaSyAUpierWu7ydjKsa2141jS55CCnqu7JXZo';
-  //  var api_key = 'AIzaSyB4ro-tnpGwr6WXHs3_wBF3hKFnXQv8pfo';
+  var api_key = 'AIzaSyBhBph_ccmIlFn9YSrvhCE_8zrYxazyqJ8';
+
 
   /* Initiate a Book Model */
   window.BookModel = Backbone.Model.extend({
@@ -39,18 +38,18 @@
       },
       search: function( e ){
         e.preventDefault();  //Prevent default behavior
-        this.ajax( $('#search_input').val() ); //Do a search with the form input as the query
+        $('#books').html(''); //Remove previous search
+        this.ajax( $('#search_input').val(), index='0'); //Do a search with the form input as the query
       },
       browse: function( query ){
-        this.ajax( query );  //Do a search with query passed in from a function
+        $('#books').html(''); //Remove previous search
+        this.ajax(query, index="0");  //Do a search with query passed in from a function
       },
-      ajax: function( query ) {
-          $('#books').html(''); //Remove previous search
-
+      ajax: function( query, index ) {
           //Query the Google Books API and return json
           $.ajax({
            url: 'https://www.googleapis.com/books/v1/volumes?',
-            data: 'q='+query+'&maxResults=8&key='+api_key+'&fields=totalItems,items(id,accessInfo, selfLink,volumeInfo)',
+            data: 'q='+encodeURIComponent(query)+'&startIndex='+index+'&maxResults=1&key='+api_key+'&fields=totalItems,items(id,accessInfo, selfLink,volumeInfo)',
             dataType: 'jsonp',
             success: function(data) {
               for(var i in data.items) {
@@ -63,13 +62,14 @@
                 bookView.render();
               }
             }
-        });
+          });
+          this.morebutton(query, index='0');
       },
       autocomplete: function( e ) {
         var query = $('#search_input').val();
         $( "#search_input" ).autocomplete({
             source: function( request, response ) {
-              url = 'https://www.googleapis.com/books/v1/volumes?q='+query+'&maxResults=5&key='+api_key+'&fields=totalItems,items(accessInfo,volumeInfo)';
+              url = 'https://www.googleapis.com/books/v1/volumes?q='+encodeURIComponent(query)+'&maxResults=0&key='+api_key+'&fields=totalItems,items(accessInfo,volumeInfo)';
               $.getJSON(url + '&callback=?', function(data) {
                  var dropdown = [];
                  for(var i in data.items) {
@@ -85,10 +85,17 @@
             },
             focus: function( event, ui ) {
                 var search = new SearchView();
-                search.browse(ui.item.value);
+                search.browse(ui.item.value, '0');
                 //console.log(ui.item.value);
             }
         });
+      },
+      morebutton: function( query, index ) {
+         var morebtn = '<a class="btn btn-large btn-info more-button" href="#/scroll/'+query+'/'+index+'">Show More</a>';
+         if (index == '0') { $('#main').append(morebtn);  } else {  $('.more-button').replaceWith(morebtn);  }
+      },
+      morebooks: function( query, index ) {
+         this.ajax(query, index);
       },
       events: {
         "submit": "search", //Initiate search function, when the form with id #search_form (el) is submitted
@@ -111,7 +118,8 @@
         "": "index",  //Landing page
         "browse/:query": "browse", // #browse/php
         "browse/subject/:query": "subject",
-        "browse/publisher/:query": "publisher"
+        "browse/publisher/:query": "publisher",
+        "scroll/:query/:id": "scroll"
     },
     index: function() {
       var search = new SearchView();
@@ -128,6 +136,11 @@
     publisher: function( query ) {
       var search = new SearchView();
       search.browse('+inpublisher:'+query);
+    },
+    scroll: function( query, id ) {
+      var countIndex = ++id;
+      var search = new SearchView();
+      search.morebooks(query, countIndex);
     }
   });
 
