@@ -2,6 +2,8 @@ body {
 	font-family: Georgia;
 	font-size: 110%;
 	line-height: 1.5em;
+	background-color: #eee;
+	padding-bottom: 3em;
 }
 
 h1 {
@@ -31,10 +33,9 @@ ul, ul li {
 	border: 1px solid #ddd;
 	list-style-type: none;
 	min-height: 350px;
+	background-color: #FFF;
 	-webkit-box-shadow: 0 2px 3px rgba(0,0,0,0.1);
 	box-shadow: 0 2px 3px rgba(0,0,0,0.1);
-	-webkit-border-radius: 5px;
-	border-radius: 5px;
 	margin: 10px 10px 10px;
 	position: relative;
 }
@@ -98,4 +99,25 @@ li.book img {
 	width: 50%;
 	margin: 60px auto 0;
 }
+
+/* Autocomplete */
+.ui-widget-content {
+	background: rgba(255,255,255,0.9) none no-repeat scroll 0 0 !important;
+}
+
+.ui-menu li a:hover,
+.ui-menu li a:focus,
+.ui-menu li a.ui-state-hover {
+	background: #ccffff none no-repeat scroll 0 0 !important;
+	border: none !important;
+	color: #666 !important;
+}
+
+.ui-menu li {
+	border-bottom: 1px dashed #EEE;
+	color: #666;
+}
+
+
+
 

@@ -1,6 +1,8 @@
 (function($) {
 
-  var api_key = 'AIzaSyBhBph_ccmIlFn9YSrvhCE_8zrYxazyqJ8';
+ // var api_key = 'AIzaSyBhBph_ccmIlFn9YSrvhCE_8zrYxazyqJ8';
+    var api_key = 'AIzaSyAUpierWu7ydjKsa2141jS55CCnqu7JXZo';
+  //  var api_key = 'AIzaSyB4ro-tnpGwr6WXHs3_wBF3hKFnXQv8pfo';
 
   /* Initiate a Book Model */
   window.BookModel = Backbone.Model.extend({
@@ -31,7 +33,10 @@
   /* Search the API */
   var SearchView = Backbone.View.extend({
       el: $("#search_form"),
-
+      
+      initialize: function() {
+           // $('#books').jcarousel();
+      },
       search: function( e ){
         e.preventDefault();  //Prevent default behavior
         this.ajax( $('#search_input').val() ); //Do a search with the form input as the query
@@ -45,10 +50,12 @@
           //Query the Google Books API and return json
           $.ajax({
            url: 'https://www.googleapis.com/books/v1/volumes?',
-            data: 'q='+query+'&maxResults=40&key='+api_key+'&fields=totalItems,items(id,accessInfo, selfLink,volumeInfo)',
+            data: 'q='+query+'&maxResults=8&key='+api_key+'&fields=totalItems,items(id,accessInfo, selfLink,volumeInfo)',
             dataType: 'jsonp',
             success: function(data) {
               for(var i in data.items) {
+                data.items[i].volumeInfo = data.items[i].volumeInfo || {}; //Fix object 'undefined' error if there is a missing field
+                data.items[i].volumeInfo.imageLinks = data.items[i].volumeInfo.imageLinks || {};  
                 data.items[i].volumeInfo.title = data.items[i].volumeInfo.title.length > 30 ? data.items[i].volumeInfo.title.substr(0,30) + '...' : data.items[i].volumeInfo.title;
                 var book = new BookModel(data.items[i]);
                 console.log(data.items[i]);
@@ -62,13 +69,13 @@
         var query = $('#search_input').val();
         $( "#search_input" ).autocomplete({
             source: function( request, response ) {
-              url = 'https://www.googleapis.com/books/v1/volumes?q='+query+'&maxResults=10&key='+api_key+'&fields=totalItems,items(accessInfo,volumeInfo)';
+              url = 'https://www.googleapis.com/books/v1/volumes?q='+query+'&maxResults=5&key='+api_key+'&fields=totalItems,items(accessInfo,volumeInfo)';
               $.getJSON(url + '&callback=?', function(data) {
                  var dropdown = [];
                  for(var i in data.items) {
                     var subtitle = typeof data.items[i].volumeInfo.subtitle != "undefined" ? ': '+data.items[i].volumeInfo.subtitle : '';
                     var ele = {};
-                    ele = data.items[i].volumeInfo.title+subtitle;
+                    ele = data.items[i].volumeInfo.title+subtitle; //Create array of objects autocomplete can parse
                     dropdown.push(ele);
                    // console.log(data.items[i].volumeInfo);
                   }
@@ -77,7 +84,6 @@
               });
             },
             focus: function( event, ui ) {
-                $('#books').html(''); //Remove previous search
                 var search = new SearchView();
                 search.browse(ui.item.value);
                 //console.log(ui.item.value);
@@ -99,7 +105,7 @@
   });
 
 
-  /* Some pages */
+  /* Some browse pages */
   var AppRouter = Backbone.Router.extend({
     routes: {
         "": "index",  //Landing page

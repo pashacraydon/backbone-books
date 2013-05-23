@@ -7,12 +7,7 @@
     <link rel="stylesheet" href="css/twitter-bootstrap.css">
     <link rel="stylesheet" href="css/booklet.css">
     <!--   
-        <ul class="meta">
-          <li>Published: <%= volumeInfo.publishedDate %> </li>
-          <li>Publisher: <a href="#browse/publisher/<%= volumeInfo.publisher %>"><%= volumeInfo.publisher %></a> </li>
-          <li>Category: <a href="#browse/subject/<%= volumeInfo.categories %>"><%= volumeInfo.categories %></a> </li>
-                  <p class="description"><%= volumeInfo.description %></p>
-        </ul>   -->
+                  <p class="description"><%= volumeInfo.description %></p> -->
     <!-- Libraries: -->
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/black-tie/jquery-ui.css" type="text/css" />
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
@@ -35,9 +30,7 @@
   <script type="text/template" id="books_template">
     <li class='<%= id %> book'>
       <div class="group image">
-      <% if (typeof(volumeInfo.imageLinks.thumbnail) != "undefined") { %>
-        <a class="detail" href="<%= accessInfo.webReaderLink %>" target="_blank"><img src='<%= volumeInfo.imageLinks.thumbnail %>' /></a>
-      <% } %>
+        <a class="detail" href="<%= accessInfo.webReaderLink %>" target="_blank"><img src="<%= (volumeInfo.imageLinks.thumbnail ? volumeInfo.imageLinks.thumbnail : 'http://placehold.it/128x158/eeeeee/999999') %>" /></a>
         <h3 class="boot-title"><a href="<%= selfLink %>" title=""><%= volumeInfo.title %></a></h3>
         <p class="meta"> Published by <a href="#browse/publisher/<%= volumeInfo.publisher %>"><%= volumeInfo.publisher %></a>. 
         Under, <a href="#browse/subject/<%= volumeInfo.categories %>"><%= volumeInfo.categories %></a>
