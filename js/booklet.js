@@ -1,7 +1,7 @@
 (function($) {
 
   var api_key = 'AIzaSyBhBph_ccmIlFn9YSrvhCE_8zrYxazyqJ8';
-  var num_books = 4;
+  var num_books = 2;
    // var api_key = 'AIzaSyAUpierWu7ydjKsa2141jS55CCnqu7JXZo';
   //  var api_key = 'AIzaSyB4ro-tnpGwr6WXHs3_wBF3hKFnXQv8pfo';
 
@@ -33,7 +33,7 @@
 
   /* Search the API */
   var SearchView = Backbone.View.extend({
-      el: $("#search_form"),
+      el: $("#search_form"),  //Bind this view to the search form
       
       initialize: function() {
            // $('#books').jcarousel();
@@ -77,7 +77,7 @@
                  for(var i in data.items) {
                     var subtitle = typeof data.items[i].volumeInfo.subtitle != "undefined" ? ': '+data.items[i].volumeInfo.subtitle : '';
                     var ele = {};
-                    ele = data.items[i].volumeInfo.title+subtitle; //Create array of objects autocomplete can parse
+                    ele = data.items[i].volumeInfo.title+subtitle; //Create array of object attributes autocomplete can parse
                     dropdown.push(ele);
                    // console.log(data.items[i].volumeInfo);
                   }
@@ -109,32 +109,44 @@
 
 
   var BookView = Backbone.View.extend({
-    el: $("#books"),
+    render: function() {
+      var book = _.template( $("#books_template").html(), this.model.toJSON());
+      $("#books").append(book);
+      $(".book").fadeIn(200);
+    }
+  });
+
+  //http://lostechies.com/derickbailey/2011/10/11/backbone-js-getting-the-model-for-a-clicked-element/
+ var BookDetailView = Backbone.View.extend({
+    el: $("#books"), 
 
     initialize: function() {
 
     },
     render: function() {
-      var book = _.template( $("#books_template").html(), this.model.toJSON());
-      $("#books").append(book);
-      $(".book").fadeIn(200);
+      var detail = _.template( $("#detail_template").html(), this.model.toJSON());
+      $("#book-details").append(detail);
     },
     detail: function() {
+        var id = this.mode.get("id");
+        alert(id);
+
         $.ajax({
           url: 'https://www.googleapis.com/books/v1/volumes/'+this.model.id,
           dataType: 'jsonp',
           data: 'fields=volumeInfo/imageLinks&key='+api_key,
           success: function (data) {
-               alert(data.volumeInfo)
                console.log(data);
+               var detail = new BookModel(data);
+               var bookDetail = new BookDetailView({ model: detail });
+               bookDetail.render();
           }
-        });
+        }); 
      },
      events: {
-        'click .book': 'detail'
+        'click li': 'detail'
      }
   });
-
 
   /* Some browse pages */
   var AppRouter = Backbone.Router.extend({

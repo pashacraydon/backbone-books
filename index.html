@@ -23,12 +23,13 @@
       <button id="search_button" class="btn btn-large btn-primary" type="submit">Go</button>
   </form>
 <div id="main">
+ <div id="book-details"></div>
   <ul id="books">
   </ul>
 </div>
 
   <script type="text/template" id="books_template">
-    <li class='book'>
+    <li class='book' data-id='${id}'>
       <div class="group image">
         <img src="<%= (volumeInfo.imageLinks.thumbnail ? volumeInfo.imageLinks.thumbnail : 'http://placehold.it/128x158/eeeeee/999999') %>" />
         <h3 class="boot-title"><%= volumeInfo.title %></h3>
@@ -40,9 +41,9 @@
     </li>
   </script>
 
-  <script type="text/template" id="book_detail_template">
+  <script type="text/template" id="detail_template">
     <div class="detail-view-template">
-          <iframe src="<%= accessInfo.webReaderLink %>&output=embed"></iframe>
+    <img src="<%= (volumeInfo.imageLinks.medium ? volumeInfo.imageLinks.medium : 'http://placehold.it/128x158/eeeeee/999999') %>" />
     </div>
   </script>
 
