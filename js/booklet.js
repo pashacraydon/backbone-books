@@ -116,7 +116,8 @@
     }
   });
 
-  //http://lostechies.com/derickbailey/2011/10/11/backbone-js-getting-the-model-for-a-clicked-element/
+  /*
+  http://lostechies.com/derickbailey/2011/10/11/backbone-js-getting-the-model-for-a-clicked-element/ */
  var BookDetailView = Backbone.View.extend({
     el: $("#books"), 
 
