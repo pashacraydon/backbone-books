@@ -1,7 +1,7 @@
 (function($) {
 
   var api_key = 'AIzaSyBhBph_ccmIlFn9YSrvhCE_8zrYxazyqJ8';
-  var num_books = 1;
+  var num_books = 4;
    // var api_key = 'AIzaSyAUpierWu7ydjKsa2141jS55CCnqu7JXZo';
   //  var api_key = 'AIzaSyB4ro-tnpGwr6WXHs3_wBF3hKFnXQv8pfo';
 
@@ -71,7 +71,7 @@
         var query = $('#search_input').val();
         $( "#search_input" ).autocomplete({
             source: function( request, response ) {
-              url = 'https://www.googleapis.com/books/v1/volumes?q='+encodeURIComponent(query)+'&maxResults=2&key='+api_key+'&fields=totalItems,items(accessInfo,volumeInfo)';
+              url = 'https://www.googleapis.com/books/v1/volumes?q='+encodeURIComponent(query)+'&maxResults=4&key='+api_key+'&fields=totalItems,items(accessInfo,volumeInfo)';
               $.getJSON(url + '&callback=?', function(data) {
                  var dropdown = [];
                  for(var i in data.items) {
