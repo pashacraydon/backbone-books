@@ -6,7 +6,7 @@
   //  var api_key = 'AIzaSyB4ro-tnpGwr6WXHs3_wBF3hKFnXQv8pfo';
 
   /* Initiate a Book Model */
-  window.BookModel = Backbone.Model.extend({
+  var BookModel = Backbone.Model.extend({
     //If JSON field is 'undefined', prevent ajax error by supplying null values with an empty string default
     defaults: {
         "description": "",
@@ -26,8 +26,7 @@
     }
   });
 
-  /* Initiate a Collection of Book Models */
-  window.BookCollections = Backbone.Collection.extend({
+  var BookCollection = Backbone.Collection.extend({
         model: BookModel
     });
 
@@ -54,12 +53,13 @@
             data: 'q='+encodeURIComponent(query)+'&startIndex='+index+'&maxResults='+num_books+'&key='+api_key+'&fields=totalItems,items(id,accessInfo, selfLink,volumeInfo)',
             dataType: 'jsonp',
             success: function(data) {
+              var books = new BookCollection();
               for(var i in data.items) {
-                data.items[i].volumeInfo = data.items[i].volumeInfo || {}; //Fix object 'undefined' error if there is a missing field
+                data.items[i].volumeInfo = data.items[i].volumeInfo || {}; //Define object
                 data.items[i].volumeInfo.imageLinks = data.items[i].volumeInfo.imageLinks || {};  
                 data.items[i].volumeInfo.title = data.items[i].volumeInfo.title.length > 30 ? data.items[i].volumeInfo.title.substr(0,30) + '...' : data.items[i].volumeInfo.title;
                 var book = new BookModel(data.items[i]);
-                console.log(data.items[i]);
+               // console.log(data.items[i]);
                 var bookView = new BookView({ model: book });
                 bookView.render();
               }
@@ -109,11 +109,21 @@
 
 
   var BookView = Backbone.View.extend({
+    el: $("#books"), 
+
+    initialize: function() {
+    },
     render: function() {
       var book = _.template( $("#books_template").html(), this.model.toJSON());
       $("#books").append(book);
       $(".book").fadeIn(200);
-    }
+    },
+    detail: function() {
+        alert(this.model.id);
+    },
+    events: {
+        'click li.book': 'detail'
+     }
   });
 
   /*
@@ -122,7 +132,7 @@
     el: $("#books"), 
 
     initialize: function() {
-
+        alert(this.model.id);
     },
     render: function() {
       var detail = _.template( $("#detail_template").html(), this.model.toJSON());
@@ -145,7 +155,7 @@
         }); 
      },
      events: {
-        'click li': 'detail'
+        'click li.book': 'detail'
      }
   });
 
