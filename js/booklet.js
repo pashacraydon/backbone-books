@@ -70,7 +70,7 @@
                     bookView.render();
                 }, this); */
 
-                var item = new BookView({ collection: Books });
+                var item = new AllBooksView({ collection: Books });
                 item.render();
                 $("#books").html(item.el);
 
@@ -95,7 +95,7 @@
                  response(dropdown);
               });
             },
-            focus: function( event, ui ) {
+            select: function( event, ui ) {
                 var search = new SearchView();
                 search.browse(ui.item.value, '0');
                 //console.log(ui.item.value);
@@ -118,41 +118,67 @@
   });
 
 
-  var BookView = Backbone.View.extend({
+  var AllBooksView = Backbone.View.extend({
     tagName: "ul",
 
     initialize: function(){
-        _.bindAll(this, "detail");
+        _.bindAll(this, "book");
     },
     render: function(){
      // console.log(this.collection.toJSON());
-      this.collection.each(this.detail);
+      this.collection.each(this.book);
     },
-    detail: function(model) {
-      var bookDetail = new DetailView({model: model});
-      bookDetail.render();
-      $(this.el).append(bookDetail.el);
+    book: function(model) {
+      var bookItem = new BookView({ model: model });
+      bookItem.render();
+      $(this.el).append(bookItem.el);
     }
   });
 
 
-  var DetailView = Backbone.View.extend({
+  var BookView = Backbone.View.extend({
     tagName: "li",
 
     clicked: function(e){
        e.preventDefault();
-       alert(this.model.id);
+       this.detail(this.model);
     },
     render: function(){
        var book = _.template( $("#books_template").html(), this.model.toJSON());
        $(this.el).append(book); 
-       $(".book").fadeIn(200);
+    },
+    detail: function(model) {
+       var bookDetail = new DetailView({ el: $("#book-details"), model: model });
+       bookDetail.render();
     },
     events: {
         "click": "clicked"
     }
   });
 
+  var DetailView = Backbone.View.extend({
+    render: function() {
+      $.ajax({
+        url: 'https://www.googleapis.com/books/v1/volumes/'+this.model.id,
+        dataType: 'jsonp',
+        data: 'fields=volumeInfo&key='+api_key,
+        success: function (data) {
+            console.log(data.volumeInfo);
+            data.volumeInfo.imageLinks = data.volumeInfo.imageLinks || {}; //Define object
+            var detail = new BookModel(data.volumeInfo);
+            var view = _.template( $("#detail_template").html(), detail.toJSON());
+            console.log(view);
+            $("#book-details").append(view);
+        }
+      });
+    },
+    hide: function() {
+       $("#book-details").empty();
+    },
+    events: {
+        "click": "hide"
+    }
+  });
 
   /* Some browse pages */
   var AppRouter = Backbone.Router.extend({
