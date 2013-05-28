@@ -72,7 +72,7 @@
 
                 var item = new AllBooksView({ collection: Books });
                 item.render();
-                $("#books").html(item.el);
+                $("#books").append(item.el);
 
               }
           });
