@@ -6,9 +6,26 @@ body {
 	padding-bottom: 3em;
 }
 
+#overlay {
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	background-color: rgba(0,0,0,0.8);
+	top: 0;
+	left: 0;
+	z-index: 999999;
+}
+
 h1 {
 	line-height: 1.4em;
 	margin-top: 10px;
+}
+
+h3 {
+	margin-bottom: 0;
+	font-size: 1em;
+	color: #666;
+	text-transform: uppercase;
 }
 
 ul, ul li {
@@ -31,6 +48,12 @@ ul, ul li {
 	display: inline-block;
 	vertical-align: bottom;
 	padding-bottom: 60px;
+	position: relative;
+}
+
+#books li:hover {
+	z-index: 999999;
+	cursor: pointer;
 }
 
 .wrap-btn,
@@ -123,10 +146,11 @@ textarea:focus, input:focus{
 
 /* Autocomplete */
 .ui-widget-content {
-	background: rgba(255,255,255,0.7) none no-repeat scroll 0 0 !important;
+	background: rgba(255,255,255,0.9) none no-repeat scroll 0 0 !important;
 	-webkit-border-radius: 0px !important;
 	border-radius: 0px !important;
 	border: none !important;
+	z-index: 999999 !important;
 }
 
 .ui-menu li a:hover,
@@ -145,13 +169,13 @@ textarea:focus, input:focus{
 /* Detail view */
 #detail-view-template {
 	position: fixed;
-	top: 50px;
+	top: 50%;
 	left: 50%;
-	margin: 0 0 0 -400px;
+	margin: -400px 0 0 -400px;
 	width: 800px;
 	-webkit-box-shadow: 3px 8px 12px rgba(0, 0, 0, 0.3);
 	box-shadow: 3px 8px 12px rgba(0, 0, 0, 0.3);
-	z-index: 99;
+	z-index: 9999999;
 	background-color: rgba(255,255,255,0.9);
 	padding: 50px;
 	-webkit-border-radius: 5px;
@@ -162,12 +186,7 @@ textarea:focus, input:focus{
 
 #detail-view-template .book {
 	float:left;
-	margin: 20px 0 20px 0;
-	position: relative;
-}
-
-.wrapper {
-	display: inline-block;
+	margin: 20px 30px 20px 0;
 }
 
 #detail-view-template .wrap-book {
@@ -175,19 +194,14 @@ textarea:focus, input:focus{
     float: left;
 }
 
-#book-details {
-	position:relative;
-	z-index: 98;
-}
-
 .close-detail {
    font-size: 2em;
    opacity: 0.6;
    position: absolute;
-   z-index: 999;
    right: 30px;
    top: 30px;
    color: #333;
+   text-decoration: none;
 }
 
 .close-detail:hover {

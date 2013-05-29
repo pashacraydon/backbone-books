@@ -1,9 +1,9 @@
 (function($) {
 
+  /* Please use your own API key, thanks! */
   var api_key = 'AIzaSyBhBph_ccmIlFn9YSrvhCE_8zrYxazyqJ8';
   var num_books = 18;
-   // var api_key = 'AIzaSyAUpierWu7ydjKsa2141jS55CCnqu7JXZo';
-  //  var api_key = 'AIzaSyB4ro-tnpGwr6WXHs3_wBF3hKFnXQv8pfo';
+  var counter = 99999;
 
   /* Initiate a Book Model */
   var BookModel = Backbone.Model.extend({
@@ -57,20 +57,15 @@
             data: 'q='+encodeURIComponent(term)+'&startIndex='+index+'&maxResults='+num_books+'&key='+api_key+'&fields=totalItems,items(id,volumeInfo)',
             dataType: 'jsonp',
               success: function(data) {
-                
                 var Books = new BookCollection();
 
                   //Put JSON API into a model, into a collection
                   for(var i in data.items) {
                     data.items[i].volumeInfo = data.items[i].volumeInfo || {}; //Define object
-                    data.items[i].volumeInfo.imageLinks = data.items[i].volumeInfo.imageLinks || {};  
-                    data.items[i].volumeInfo.imageLinks.thumbnail = data.items[i].volumeInfo.imageLinks.thumbnail || {};  
-                    console.log(data.items[i]);
-                        var book = new BookModel({
-                             id : data.items[i].id,
-                             thumbnail : data.items[i].volumeInfo.imageLinks.thumbnail,
-                             counter : num_books--  });
-                        Books.add(book);
+                    data.items[i].volumeInfo.imageLinks = data.items[i].volumeInfo.imageLinks || {}; 
+                    data.items[i].volumeInfo.imageLinks.thumbnail = data.items[i].volumeInfo.imageLinks.thumbnail || '';
+                    var book = new BookModel(data.items[i]);
+                    Books.add(book);
                   }
 
                   /* _.each(Books.models, function (item) {
@@ -88,7 +83,11 @@
                       $("#books").html(item.el);
                   }
 
+                  if (data.error) {
+                    console.log(data.error.message);
+                  }
               }
+
           });
           this.morebutton(term, index);
       },
@@ -97,7 +96,7 @@
 
         $( "#search_input" ).autocomplete({
             source: function( request, response ) {
-              url = 'https://www.googleapis.com/books/v1/volumes?q='+encodeURIComponent(term)+'&maxResults=4&key='+api_key+'&fields=totalItems,items(accessInfo,volumeInfo)';
+              url = 'https://www.googleapis.com/books/v1/volumes?q='+encodeURIComponent(term)+'&maxResults=8&key='+api_key+'&fields=totalItems,items(accessInfo,volumeInfo)';
               $.getJSON(url + '&callback=?', function(data) {
                  var dropdown = [];
                  for(var i in data.items) {
@@ -160,7 +159,7 @@
     },
     render: function(){
        var book = _.template( $("#books_template").html(), this.model.toJSON());
-       $(this.el).append(book); 
+       $(this.el).append(book).css({'z-index':''+counter--+''});
     },
     detail: function(model) {
        var bookDetail = new DetailView({ el: $("#book-details"), model: model });
@@ -173,6 +172,8 @@
 
   var DetailView = Backbone.View.extend({
     initialize: function() {
+      var overlay = '<div id="overlay"></div>';
+      $('#book-details').append(overlay);
       this.model.attributes.description = this.model.attributes.description || {};
       this.model.attributes.volumeInfo = this.model.attributes.volumeInfo || {};
       this.model.attributes.volumeInfo.imageLinks = this.model.attributes.volumeInfo.imageLinks || {};
@@ -183,19 +184,20 @@
         dataType: 'jsonp',
         data: '&key='+api_key,
         success: function (data) {
-            console.log(data);
+            data.volumeInfo.imageLinks = data.volumeInfo.imageLinks || {}; //Define object
             data.imageLinks = data.imageLinks || {}; //Define object
             data.title = data.title || {}; //Define object
             data.previewLink = data.previewLink || {}; //Define object
             data.description = data.description || {};
             var detail = new BookModel(data);
-           // console.log(detail.toJSON());
+            console.log(detail.toJSON());
             var view = _.template( $("#detail_template").html(), detail.toJSON());
             $("#book-details").append(view);
         }
       });
     },
-    hide: function() {
+    hide: function(e) {
+       e.preventDefault();
        $("#book-details").empty();
     },
     events: {
