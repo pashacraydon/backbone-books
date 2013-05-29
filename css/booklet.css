@@ -66,9 +66,12 @@ ul, ul li {
 	cursor: pointer;
 }
 
-.wrap-btn,
 #books {
 	padding-top: 100px;
+}
+
+.wrap-btn {
+	padding-top: 50px;
 }
 
 .reader {

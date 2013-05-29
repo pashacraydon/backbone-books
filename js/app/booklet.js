@@ -87,7 +87,7 @@ define(["jquery", "jqueryui", "modernizr", "underscore", "backbone"], function($
                   }
 
                   if (data.error) {
-                    console.log(data.error.message);
+                   // console.log(data.error.message);
                   }
               }
 
@@ -194,7 +194,7 @@ define(["jquery", "jqueryui", "modernizr", "underscore", "backbone"], function($
         data: 'fields=accessInfo,volumeInfo&key='+api_key,
         success: function (data) {
             var detail = new BookModel(data);
-            console.log(detail.toJSON());
+           // console.log(detail.toJSON());
             var view = _.template( $("#detail_template").html(), detail.toJSON());
             $("#book-details").append(view);
 
