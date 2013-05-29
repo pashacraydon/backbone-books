@@ -1,4 +1,6 @@
-(function($) {
+
+define(["jquery", "jqueryui", "modernizr", "underscore", "backbone"], function($) {
+  $(function() {
 
   /* Please use your own API key, thanks! */
   var api_key = 'AIzaSyBhBph_ccmIlFn9YSrvhCE_8zrYxazyqJ8';
@@ -241,8 +243,6 @@
     }
   });
 
-
-
   /* Some browse pages */
   var AppRouter = Backbone.Router.extend({
     routes: {
@@ -274,11 +274,7 @@
   });
 
   var app = new AppRouter();
-
   Backbone.history.start(); 
 
-    $(document).ready(function() {
-      });
-
-
-})(jQuery);
+  });
+});
