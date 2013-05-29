@@ -9,7 +9,6 @@
   var BookModel = Backbone.Model.extend({
     //If JSON field is 'undefined', prevent ajax error by supplying null values with an empty string default
     defaults: {
-        "id": "",
         "volumeInfo": [
            {
             "description": "",
@@ -64,8 +63,10 @@
                     data.items[i].volumeInfo = data.items[i].volumeInfo || {}; //Define object
                     data.items[i].volumeInfo.imageLinks = data.items[i].volumeInfo.imageLinks || {}; 
                     data.items[i].volumeInfo.imageLinks.thumbnail = data.items[i].volumeInfo.imageLinks.thumbnail || '';
-                    var book = new BookModel(data.items[i]);
-                    Books.add(book);
+                    if (data.items[i].volumeInfo.imageLinks.thumbnail) {
+                        var book = new BookModel(data.items[i]);
+                        Books.add(book);
+                    }
                   }
 
                   /* _.each(Books.models, function (item) {
@@ -109,7 +110,7 @@
                  response(dropdown);
               });
             },
-            select: function( event, ui ) {
+            focus: function( event, ui ) {
                 var search = new SearchView();
                 search.browse(ui.item.value, '0');
                 //console.log(ui.item.value);
@@ -171,9 +172,15 @@
   });
 
   var DetailView = Backbone.View.extend({
+    el: $("#book-details"),
+
     initialize: function() {
+
+      /* Black overlay */
       var overlay = '<div id="overlay"></div>';
-      $('#book-details').append(overlay);
+      $(this.el).append(overlay);
+
+      /* Define JSON objects */
       this.model.attributes.description = this.model.attributes.description || {};
       this.model.attributes.volumeInfo = this.model.attributes.volumeInfo || {};
       this.model.attributes.volumeInfo.imageLinks = this.model.attributes.volumeInfo.imageLinks || {};
@@ -182,17 +189,16 @@
       $.ajax({
         url: 'https://www.googleapis.com/books/v1/volumes/'+this.model.id,
         dataType: 'jsonp',
-        data: '&key='+api_key,
+        data: 'fields=accessInfo,volumeInfo&key='+api_key,
         success: function (data) {
-            data.volumeInfo.imageLinks = data.volumeInfo.imageLinks || {}; //Define object
-            data.imageLinks = data.imageLinks || {}; //Define object
-            data.title = data.title || {}; //Define object
-            data.previewLink = data.previewLink || {}; //Define object
-            data.description = data.description || {};
             var detail = new BookModel(data);
             console.log(detail.toJSON());
             var view = _.template( $("#detail_template").html(), detail.toJSON());
             $("#book-details").append(view);
+
+            /* Description Toggle, need a new view else this one loads too late for jquery */
+            var descToggle = new DescriptionView();
+            descToggle.render();
         }
       });
     },
@@ -205,7 +211,38 @@
     }
   });
 
- 
+  var DescriptionView = Backbone.View.extend({
+    el: $("#book-details"),
+    
+    render: function() {
+        var adjustheight = 100;
+        var moreText = "More »";
+        $(".description .more-block").css('height', adjustheight).css('overflow', 'hidden');
+        $(".description").append('<a href="#" class="more"></a>');
+        $("a.more").text(moreText);
+       // console.log($(this.el).html());
+    },
+    more: function(e) {
+        e.preventDefault();
+        var lessText = "« Less";
+        $(".more-block").css('height', 'auto').css('overflow', 'visible');
+        $("a.more").text(lessText).addClass('less');
+    },
+    less: function(e) {
+        e.preventDefault();
+        var adjustheight = 100;
+        var moreText = "+  More";
+        $(".more-block").css('height', adjustheight).css('overflow', 'hidden');
+        $("a.more").text(moreText).removeClass('less');
+    },
+    events: {
+        "click .more": "more",
+        "click .less": "less"
+    }
+  });
+
+
+
   /* Some browse pages */
   var AppRouter = Backbone.Router.extend({
     routes: {

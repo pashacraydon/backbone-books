@@ -16,9 +16,15 @@ body {
 	z-index: 999999;
 }
 
+.placeholder {
+	width: 128px;
+	height: 195px;
+	background-color: #fff;
+}
 h1 {
-	line-height: 1.4em;
-	margin-top: 10px;
+	line-height: 1.3em;
+	margin: 10px 0 0;
+	font-family: 'Josefin Slab', serif;
 }
 
 h3 {
@@ -65,12 +71,6 @@ ul, ul li {
 	position: absolute;
 	bottom: 5px;
 	right: 5px;
-}
-
-.description {
-	line-height: 1.5em;
-    font-size: 0.8em;
-	color: #666;
 }
 
 .group.image {
@@ -141,7 +141,11 @@ textarea:focus, input:focus{
 }
 
 .btn:hover {
-	opacity: 0.6;
+	background-color: #c35353;
+}
+
+.description {
+	padding-bottom: 1.5em;
 }
 
 /* Autocomplete */
@@ -207,6 +211,10 @@ textarea:focus, input:focus{
 .close-detail:hover {
 	opacity: 1;
 	text-decoration: none;
+}
+
+.wrap-info {
+	margin-left: 210px;
 }
 
 /* 3d css book covers
