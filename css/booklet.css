@@ -30,8 +30,6 @@ ul, ul li {
 	list-style-type: none;
 	display: inline-block;
 	vertical-align: bottom;
-	position: relative;
-	padding-right: 60px;
 	padding-bottom: 60px;
 }
 
@@ -147,9 +145,9 @@ textarea:focus, input:focus{
 /* Detail view */
 #detail-view-template {
 	position: fixed;
-	top: 50%;
+	top: 50px;
 	left: 50%;
-	margin: -400px 0 0 -400px;
+	margin: 0 0 0 -400px;
 	width: 800px;
 	-webkit-box-shadow: 3px 8px 12px rgba(0, 0, 0, 0.3);
 	box-shadow: 3px 8px 12px rgba(0, 0, 0, 0.3);
@@ -164,7 +162,12 @@ textarea:focus, input:focus{
 
 #detail-view-template .book {
 	float:left;
-	margin: 20px 30px 20px 0;
+	margin: 20px 0 20px 0;
+	position: relative;
+}
+
+.wrapper {
+	display: inline-block;
 }
 
 #detail-view-template .wrap-book {
@@ -172,10 +175,16 @@ textarea:focus, input:focus{
     float: left;
 }
 
+#book-details {
+	position:relative;
+	z-index: 98;
+}
+
 .close-detail {
    font-size: 2em;
    opacity: 0.6;
    position: absolute;
+   z-index: 999;
    right: 30px;
    top: 30px;
    color: #333;

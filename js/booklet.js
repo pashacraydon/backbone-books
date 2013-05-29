@@ -64,8 +64,12 @@
                   for(var i in data.items) {
                     data.items[i].volumeInfo = data.items[i].volumeInfo || {}; //Define object
                     data.items[i].volumeInfo.imageLinks = data.items[i].volumeInfo.imageLinks || {};  
+                    data.items[i].volumeInfo.imageLinks.thumbnail = data.items[i].volumeInfo.imageLinks.thumbnail || {};  
                     console.log(data.items[i]);
-                        var book = new BookModel(data.items[i]);
+                        var book = new BookModel({
+                             id : data.items[i].id,
+                             thumbnail : data.items[i].volumeInfo.imageLinks.thumbnail,
+                             counter : num_books--  });
                         Books.add(book);
                   }
 
@@ -179,7 +183,7 @@
         dataType: 'jsonp',
         data: '&key='+api_key,
         success: function (data) {
-            data.volumeInfo.imageLinks = data.volumeInfo.imageLinks || {}; //Define object
+            console.log(data);
             data.imageLinks = data.imageLinks || {}; //Define object
             data.title = data.title || {}; //Define object
             data.previewLink = data.previewLink || {}; //Define object
