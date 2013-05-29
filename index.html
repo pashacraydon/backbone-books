@@ -4,21 +4,23 @@
 <head>
   <meta charset="utf-8">
   <title>Booklet</title>
-    <link rel="stylesheet" href="css/twitter-bootstrap.css">
     <link rel="stylesheet" href="css/booklet.css">
     <!--   
                   <p class="description"><%= volumeInfo.description %></p> -->
     <!-- Libraries: -->
     <link rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/black-tie/jquery-ui.css" type="text/css" />
+    <link href='http://fonts.googleapis.com/css?family=Josefin+Sans:400,700' rel='stylesheet' type='text/css'>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script src='http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min.js'></script>
+    <script src="js/libs/modernizr.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.2.2/underscore-min.js"></script>
     <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/0.5.3/backbone-min.js"></script>
   </head>
   <body>
+ 
+  <div id="wrapper">
 
   <form id="search_form" action="" method="POST">
-      <label for="q"><strong>Booklit</strong>: Search Google Books API.</label>
       <input autocomplete="off" autofocus="true" type="text" name="q" id="search_input" value="" placeholder="Search for a book, e.g.: 'a dance with dragons'" />
       <button id="search_button" class="btn btn-large btn-primary" type="submit">Go</button>
   </form>
@@ -28,25 +30,30 @@
 </div>
 
   <script type="text/template" id="books_template">
-      <div class="group image">
-       <a href="#" class="img">
-        <img src="<%= (volumeInfo.imageLinks.thumbnail ? volumeInfo.imageLinks.thumbnail : 'http://placehold.it/128x158/eeeeee/999999') %>" /></a>
-        <h3 class="boot-title"><%= volumeInfo.title %></h3>
-        <p class="meta"> <%= (volumeInfo.publisher ? 'Published by ' : '') %> <a href="#browse/publisher/<%= volumeInfo.publisher %>"><%= volumeInfo.publisher %></a> 
-        <%= (volumeInfo.categories ? 'Under, ' : '') %> <a href="#browse/subject/<%= volumeInfo.categories %>"><%= volumeInfo.categories %></a>
-        </p>
-        <a class="btn btn-small reader" href="<%= accessInfo.webReaderLink %>" target="_blank">Read now</a>
+     <div class="book">
+       <a href="#" class="img"><img src="<%= (volumeInfo.imageLinks.thumbnail ? volumeInfo.imageLinks.thumbnail : 'http://placehold.it/128x195/eeeeee/999999') %>" /></a>
       </div>
   </script>
 
   <script type="text/template" id="detail_template">
-    <div class="detail-view-template">
-    <img src="<%= (imageLinks.medium ? imageLinks.medium : 'http://placehold.it/128x158/eeeeee/999999') %>" />
+    <div id="detail-view-template">
+     <a class="close-detail" href="#">&#8855;</a>
+     <div class="wrap-book">
+       <div class="book">
+          <img src="<%= (volumeInfo.imageLinks.small ? volumeInfo.imageLinks.small : 'http://placehold.it/128x195/eeeeee/999999') %>" /></div>
+     </div>
+
+        <%= (volumeInfo.title ? '<h2>'+volumeInfo.title+'</h2>' : '') %>
+        <%= (volumeInfo.subtitle ? '<strong>'+volumeInfo.subtitle+'</strong>' : '') %>
+        <p><%= (volumeInfo.description ? volumeInfo.description : '<p>No description found</p>') %></p>
+        <p><%= (previewLink ? '<a class="btn" href="'+previewLink+'">Preview on Google</a>' : '') %></p>
     </div>
   </script>
 
 
     <script src="js/booklet.js"></script>
+
+  </div>
 
 </body>
 </html>

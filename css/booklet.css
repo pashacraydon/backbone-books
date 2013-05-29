@@ -1,5 +1,5 @@
 body {
-	font-family: Georgia;
+	font-family: 'Josefin Sans', georgia,serif;
 	font-size: 110%;
 	line-height: 1.5em;
 	background-color: #eee;
@@ -16,7 +16,7 @@ ul, ul li {
 }
 
 #main {
-   max-width: 720px;
+   max-width: 1200px;
    width: 100%;
    margin: 0 auto;
 }
@@ -27,17 +27,17 @@ ul, ul li {
 }
 
 #books li {
-	width: 128px;
-	float: left;
-	padding: 5px 15px 0;
-	border: 1px solid #ddd;
 	list-style-type: none;
-	min-height: 350px;
-	background-color: #FFF;
-	-webkit-box-shadow: 0 2px 3px rgba(0,0,0,0.1);
-	box-shadow: 0 2px 3px rgba(0,0,0,0.1);
-	margin: 10px 10px 10px;
+	display: inline-block;
+	vertical-align: bottom;
 	position: relative;
+	padding-right: 60px;
+	padding-bottom: 60px;
+}
+
+.wrap-btn,
+#books {
+	padding-top: 100px;
 }
 
 .reader {
@@ -45,13 +45,6 @@ ul, ul li {
 	bottom: 5px;
 	right: 5px;
 }
-
-li img {
-	float: left;
-	margin: 10px 20px 10px 0;
-	border: 1px solid #EEE;
-}
-
 
 .description {
 	line-height: 1.5em;
@@ -81,6 +74,10 @@ li img {
 
 
 /* Search */
+textarea:focus, input:focus{
+    outline: 0;
+}
+
 #search_form input#search_input {
 	padding: 10px 30px 10px 20px;
 	max-width: 500px;
@@ -88,12 +85,25 @@ li img {
 	font-size: 1.25em;
 	line-height: 1.5em;
 	height: 50px;
+	font-family: 'Josefin Sans', georgia,serif;
+	background-color: transparent;
+	border: none;
+	border-bottom: 2px solid #AAA;
 }
 
 #search_form  #search_button {
-	padding: 25px;
-	position: relative;
-	top: -5px;
+	width: 48px;
+	height: 48px;
+	background: transparent url("../img/search.png") no-repeat scroll 0 0;
+	display: inline-block;
+	text-indent: -9999px;
+	border: none;
+	cursor: pointer;
+	opacity: 0.5;
+}
+
+#search_form  #search_button:hover {
+	opacity: 0.8;
 }
 
 #search_form {
@@ -102,9 +112,23 @@ li img {
 	text-align: center;
 }
 
+.btn {
+	background-color: #de6868;
+	padding: 10px 25px 10px;
+	color: white;
+	text-decoration: none;
+}
+
+.btn:hover {
+	opacity: 0.6;
+}
+
 /* Autocomplete */
 .ui-widget-content {
-	background: rgba(255,255,255,0.9) none no-repeat scroll 0 0 !important;
+	background: rgba(255,255,255,0.7) none no-repeat scroll 0 0 !important;
+	-webkit-border-radius: 0px !important;
+	border-radius: 0px !important;
+	border: none !important;
 }
 
 .ui-menu li a:hover,
@@ -116,10 +140,105 @@ li img {
 }
 
 .ui-menu li {
-	border-bottom: 1px dashed #EEE;
 	color: #666;
+	font-family: 'Josefin Sans', georgia,serif !important;
 }
 
+/* Detail view */
+#detail-view-template {
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	margin: -400px 0 0 -400px;
+	width: 800px;
+	-webkit-box-shadow: 3px 8px 12px rgba(0, 0, 0, 0.3);
+	box-shadow: 3px 8px 12px rgba(0, 0, 0, 0.3);
+	z-index: 99;
+	background-color: rgba(255,255,255,0.9);
+	padding: 50px;
+	-webkit-border-radius: 5px;
+	border-radius: 5px;
+	max-height: 600px;
+	overflow: auto;
+}
 
+#detail-view-template .book {
+	float:left;
+	margin: 20px 30px 20px 0;
+}
 
+#detail-view-template .wrap-book {
+    margin: 10px 50px 20px 0;
+    float: left;
+}
+
+.close-detail {
+   font-size: 2em;
+   opacity: 0.6;
+   position: absolute;
+   right: 30px;
+   top: 30px;
+   color: #333;
+}
+
+.close-detail:hover {
+	opacity: 1;
+	text-decoration: none;
+}
+
+/* 3d css book covers
+   http://srobbin.com/blog/3d-css-book-covers/
+------------------------------------------------*/
+.book {
+  display: inline-block;
+  box-shadow: 5px 5px 20px #333;
+  margin: 10px;
+}
+
+.book img { vertical-align: middle; }
+
+.csstransforms3d  .books {
+  -moz-perspective: 100px;
+  -moz-transform-style: preserve-3d;
+  -webkit-transform-style: preserve-3d;
+}
+
+.csstransforms3d  .book {
+  position: relative;
+  -moz-perspective: 100px;
+  -moz-transform: rotateY(-3deg);
+  -webkit-transform: perspective(100) rotateY(-3deg);
+  outline: 1px solid transparent; /* Helps smooth jagged edges in Firefox */
+  box-shadow: none;
+  margin: 0;
+}
+
+.csstransforms3d  .book img {
+  position: relative;
+}
+
+.csstransforms3d  .book:before,
+.csstransforms3d  .book:after {
+  position: absolute;
+  top: 2%;
+  height: 96%;
+  content: ' ';
+  z-index: -1;
+}
+
+.csstransforms3d  .book:before {
+  width: 100%;
+  left: 6.5%;
+  background-color: #fff;
+  box-shadow: 5px 5px 20px #333;
+}
+
+.csstransforms3d  .book:after {
+  width: 5%;
+  left: 100%;
+  background-color: #EFEFEF;
+  box-shadow: inset 0px 0px 5px #aaa;
+  -moz-transform: rotateY(20deg);
+  -webkit-transform: perspective(100) rotateY(20deg);
+}
 
