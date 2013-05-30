@@ -133,10 +133,10 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
   });
 
   var loadMoreView = Backbone.View.extend({
-      el: $("#main"),
+      el: $("#loading"),
 
       render: function(term, index) {
-         $('.wrap-btn').remove();
+         this.$el.find('.wrap-btn').remove();
          var countIndex = parseInt(index) + parseInt(num_books);
          var morebtn = '<div class="wrap-btn" style="text-align: center;"><a data-index="'+countIndex+'" data-term="'+term+'" class="btn more-button" href="#">Load more of "'+term+'"</a></div>';
          this.$el.append(morebtn);
@@ -151,7 +151,7 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
          loadMore.undelegate();
       },
       events: {
-         "click .more-button": "morebooks"
+         "click": "morebooks"
       }
   });
 
