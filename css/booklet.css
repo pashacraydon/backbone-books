@@ -146,7 +146,7 @@ textarea:focus, input:focus{
 }
 
 .btn {
-	border: 1px solid #ccc;
+	border: 2px solid #ddd;
 	color: #666;
 	-webkit-box-shadow: inset 1px 1px 0px rgba(255,255,255,0.2),1px 1px 0px rgba(255,255,255,0.2);
 	box-shadow: inset 1px 1px 0px rgba(255,255,255,0.2),1px 1px 0px rgba(255,255,255,0.2);
@@ -159,7 +159,7 @@ textarea:focus, input:focus{
 
 
 .btn:hover {
-	border: 1px solid #999;
+	border: 2px solid #fff;
 }
 
 .description {
@@ -191,9 +191,9 @@ textarea:focus, input:focus{
 /* Detail view */
 #detail-view-template {
 	position: fixed;
-	top: 50%;
+	top: 100px;
 	left: 50%;
-	margin: -400px 0 0 -400px;
+	margin: 0 0 0 -400px;
 	width: 800px;
 	-webkit-box-shadow: 0 8px 65px rgba(0, 0, 0, 0.5);
 	box-shadow: 0 8px 65px rgba(0, 0, 0, 0.5);
@@ -246,13 +246,15 @@ a.close-detail {
   margin: 10px;
 }
 
-.book img { vertical-align: middle; }
+.book img { vertical-align: middle; border: none; }
 
 .csstransforms3d  #books ul li,
 .csstransforms3d .wrap-book {
   -moz-perspective: 100px;
   -moz-transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
+  -ms-transform-style: preserve-3d;
+  -ms-perspective: 100px;
 }
 
 .csstransforms3d  .book {
@@ -260,6 +262,7 @@ a.close-detail {
   -moz-perspective: 100px;
   -moz-transform: rotateY(-3deg);
   -webkit-transform: perspective(100) rotateY(-3deg);
+  -ms-transform: rotateY(-3deg);
   outline: 1px solid transparent; /* Helps smooth jagged edges in Firefox */
   box-shadow: none;
   margin: 0;
@@ -297,6 +300,7 @@ a.close-detail {
   box-shadow: inset 0px 0px 5px #aaa;
   -moz-transform: rotateY(20deg);
   -webkit-transform: perspective(100) rotateY(20deg);
+  -ms-transform: rotateY(20deg);
 }
 
 /* Fixing some wierdness with book transform in the overlay for FIREFOX */

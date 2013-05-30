@@ -187,6 +187,7 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
     detail: function(model) {
        var bookDetail = new DetailView({ el: $("#book-details"), model: model });
        bookDetail.render();
+       bookDetail.undelegate();
     },
     events: {
         "click": "clicked"
@@ -222,6 +223,7 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
             /* Description Toggle, need a new view else this one loads too late for jquery */
             var descToggle = new DescriptionView();
             descToggle.render();
+            descToggle.undelegate();
         }
       });
     },
