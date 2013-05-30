@@ -8,6 +8,7 @@ requirejs.config({
       "app": "../app",
       "jquery": "//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.1/jquery.min",
       "jqueryui": "//ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min",
+      "css_browser_selector": "css_browser_selector",
       "modernizr": "//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min",
       "underscore": "//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min",
       "backbone": "//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min"
@@ -17,6 +18,12 @@ requirejs.config({
     		deps: ['underscore', 'jquery'],
     		exposts: 'backbone'
     	},
+      'jqueryui': {
+        deps: ['jquery']
+      },
+      'modernizr': {
+        deps: ['jquery']
+      },
     	'underscore': {
     		exports: '_'
     	},

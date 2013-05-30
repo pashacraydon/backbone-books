@@ -10,7 +10,7 @@ body {
 	width: 100%;
 	height: 100%;
 	position: fixed;
-	background-color: rgba(0,0,0,0.8);
+	background-color: rgba(255,255,255,0.7);
 	top: 0;
 	left: 0;
 	z-index: 999999;
@@ -36,6 +36,11 @@ h3 {
 
 ul, ul li {
 	margin: 0;
+}
+
+a:link,
+a:visited {
+	color: #005598;
 }
 
 #main {
@@ -72,6 +77,14 @@ ul, ul li {
 
 .wrap-btn {
 	padding-top: 50px;
+}
+
+.loading {
+	display: inline-block;
+	background: transparent url("../img/ajax-loader.gif") no-repeat scroll center center;
+	text-indent: -99999px;
+	width: 100%;
+	height: 50px;
 }
 
 .reader {
@@ -141,14 +154,20 @@ textarea:focus, input:focus{
 }
 
 .btn {
-	background-color: #de6868;
+	border: 1px solid #ccc;
+	color: #666;
+	-webkit-box-shadow: inset 1px 1px 0px rgba(255,255,255,0.2),1px 1px 0px rgba(255,255,255,0.2);
+	box-shadow: inset 1px 1px 0px rgba(255,255,255,0.2),1px 1px 0px rgba(255,255,255,0.2);
+	background-color: transparent;
 	padding: 10px 25px 10px;
-	color: white;
 	text-decoration: none;
+	-webkit-border-radius: 2px;
+	border-radius: 2px;
 }
 
+
 .btn:hover {
-	background-color: #c35353;
+	border: 1px solid #999;
 }
 
 .description {
@@ -184,10 +203,11 @@ textarea:focus, input:focus{
 	left: 50%;
 	margin: -400px 0 0 -400px;
 	width: 800px;
-	-webkit-box-shadow: 3px 8px 12px rgba(0, 0, 0, 0.3);
-	box-shadow: 3px 8px 12px rgba(0, 0, 0, 0.3);
+	-webkit-box-shadow: 0 8px 65px rgba(0, 0, 0, 0.5);
+	box-shadow: 0 8px 65px rgba(0, 0, 0, 0.5);
 	z-index: 9999999;
 	background-color: rgba(255,255,255,0.9);
+	border: 1px solid #999;
 	padding: 50px;
 	-webkit-border-radius: 5px;
 	border-radius: 5px;
@@ -205,7 +225,7 @@ textarea:focus, input:focus{
     float: left;
 }
 
-.close-detail {
+a.close-detail {
    font-size: 2em;
    opacity: 0.6;
    position: absolute;
@@ -222,6 +242,7 @@ textarea:focus, input:focus{
 
 .wrap-info {
 	margin-left: 210px;
+	margin-bottom: 50px;
 }
 
 /* 3d css book covers
@@ -235,7 +256,8 @@ textarea:focus, input:focus{
 
 .book img { vertical-align: middle; }
 
-.csstransforms3d  .books {
+.csstransforms3d  #books ul li,
+.csstransforms3d .wrap-book {
   -moz-perspective: 100px;
   -moz-transform-style: preserve-3d;
   -webkit-transform-style: preserve-3d;
@@ -249,6 +271,11 @@ textarea:focus, input:focus{
   outline: 1px solid transparent; /* Helps smooth jagged edges in Firefox */
   box-shadow: none;
   margin: 0;
+}
+
+/* Safari 3d transform are buggy with z-index overlays */
+.safari.csstransforms3d .book.removeTransform {
+  -webkit-transform: translate3d(0,0,0);
 }
 
 .csstransforms3d  .book img {
@@ -278,5 +305,15 @@ textarea:focus, input:focus{
   box-shadow: inset 0px 0px 5px #aaa;
   -moz-transform: rotateY(20deg);
   -webkit-transform: perspective(100) rotateY(20deg);
+}
+
+/* Fixing some wierdness with book transform in the overlay for FIREFOX */
+.gecko.csstransforms3d  .wrap-book .book:before {
+  left: 4.5%;
+}
+
+.gecko.csstransforms3d .wrap-book .book:after {
+	width: 7%;
+	left: 98%;
 }
 

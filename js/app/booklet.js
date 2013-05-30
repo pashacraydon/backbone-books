@@ -1,11 +1,11 @@
 
-define(["jquery", "jqueryui", "modernizr", "underscore", "backbone"], function($) {
+define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore", "backbone"], function($) {
   $(function() {
 
   /* Please use your own API key, thanks! */
   var api_key = 'AIzaSyBhBph_ccmIlFn9YSrvhCE_8zrYxazyqJ8';
   var num_books = 18;
-  var counter = 99999;
+  var counter = 9999;
 
   /* Initiate a Book Model */
   var BookModel = Backbone.Model.extend({
@@ -30,6 +30,14 @@ define(["jquery", "jqueryui", "modernizr", "underscore", "backbone"], function($
         model: BookModel
     });
 
+  Backbone.View.prototype.close = function(){
+      this.remove();
+      this.unbind();
+      if (this.onClose){
+        this.onClose();
+      }
+  }
+
   /* Search the API */
   var SearchView = Backbone.View.extend({
       el: $("#search_form"),  //Bind this view to the search form
@@ -41,17 +49,14 @@ define(["jquery", "jqueryui", "modernizr", "underscore", "backbone"], function($
       search: function( e ){
         e.preventDefault();  
         $('#books').html(''); //Remove previous search
-        this.query( $('#search_input').val(), index='0'); //Do a search with the form input as the query
+        this.query($('#search_input').val(), index='0'); //Do a search with the form input as the query
       },
       browse: function( term ){
         $('#books').html(''); //Remove previous search
         this.query(term, index="0");  //Do a search with query passed in from a function
       },
-      lastsearch: function( term ) {
-
-      },
       query: function( term, index ) {
-
+          //alert('term: '+term+' index: '+index);
           //Query the Google Books API and return json
           $.ajax({
            url: 'https://www.googleapis.com/books/v1/volumes?',
@@ -90,9 +95,11 @@ define(["jquery", "jqueryui", "modernizr", "underscore", "backbone"], function($
                    // console.log(data.error.message);
                   }
               }
-
           });
-          this.morebutton(term, index);
+
+          var more = new loadMoreView();
+          more.render(term, index);
+
       },
       autocomplete: function( e ) {
         var term = $('#search_input').val();
@@ -119,21 +126,34 @@ define(["jquery", "jqueryui", "modernizr", "underscore", "backbone"], function($
             }
         });
       },
-      morebutton: function( term, index ) {
-         $('.wrap-btn').remove();
-         var countIndex = parseInt(index) + parseInt(num_books);
-         var morebtn = '<div class="wrap-btn" style="text-align: center;"><a class="btn btn-large btn-info more-button" href="#scroll/'+encodeURIComponent(term)+'/'+countIndex+'">Show More</a></div>';
-         $('#main').append(morebtn);
-      }, 
-      morebooks: function( term, index ) {
-         this.query(term, index);
-      }, 
       events: {
         "submit": "search", //Initiate search function, when the form with id #search_form (el) is submitted
         "keyup": "autocomplete"
       }
   });
 
+  var loadMoreView = Backbone.View.extend({
+      el: $("#main"),
+
+      render: function(term, index) {
+         $('.wrap-btn').remove();
+         var countIndex = parseInt(index) + parseInt(num_books);
+         var morebtn = '<div class="wrap-btn" style="text-align: center;"><a data-index="'+countIndex+'" data-term="'+term+'" class="btn more-button" href="#">Load more of "'+term+'"</a></div>';
+         this.$el.append(morebtn);
+      }, 
+      morebooks: function(e) {
+         var term = $('.more-button').data('term');
+         var index = $('.more-button').data('index');
+       //  alert(index+' '+term);
+         e.preventDefault(); 
+         var loadMore = new SearchView();
+         loadMore.query(term, index);
+         loadMore.undelegate();
+      },
+      events: {
+         "click .more-button": "morebooks"
+      }
+  });
 
   var AllBooksView = Backbone.View.extend({
     tagName: "ul",
@@ -148,7 +168,7 @@ define(["jquery", "jqueryui", "modernizr", "underscore", "backbone"], function($
     book: function(model) {
         var bookItem = new BookView({ model: model });
         bookItem.render();
-        $(this.el).append(bookItem.el);
+        this.$el.append(bookItem.el);
     }
   });
 
@@ -162,7 +182,7 @@ define(["jquery", "jqueryui", "modernizr", "underscore", "backbone"], function($
     },
     render: function(){
        var book = _.template( $("#books_template").html(), this.model.toJSON());
-       $(this.el).append(book).css({'z-index':''+counter--+''});
+       this.$el.append(book).css({'z-index':''+counter--+''});
     },
     detail: function(model) {
        var bookDetail = new DetailView({ el: $("#book-details"), model: model });
@@ -181,6 +201,7 @@ define(["jquery", "jqueryui", "modernizr", "underscore", "backbone"], function($
       /* Black overlay */
       var overlay = '<div id="overlay"></div>';
       $(this.el).append(overlay);
+      $(this.el).next().find('li').find('.book').addClass('removeTransform');
 
       /* Define JSON objects */
       this.model.attributes.description = this.model.attributes.description || {};
@@ -207,9 +228,11 @@ define(["jquery", "jqueryui", "modernizr", "underscore", "backbone"], function($
     hide: function(e) {
        e.preventDefault();
        $("#book-details").empty();
+       this.$el.next().find('li').find('.book').removeClass('removeTransform');
     },
     events: {
-        "click .close-detail": "hide"
+        "click .close-detail": "hide",
+        "click #overlay": "hide"
     }
   });
 
@@ -233,7 +256,7 @@ define(["jquery", "jqueryui", "modernizr", "underscore", "backbone"], function($
     less: function(e) {
         e.preventDefault();
         var adjustheight = 100;
-        var moreText = "+  More";
+        var moreText = "More »";
         $(".more-block").css('height', adjustheight).css('overflow', 'hidden');
         $("a.more").text(moreText).removeClass('less');
     },
@@ -249,8 +272,7 @@ define(["jquery", "jqueryui", "modernizr", "underscore", "backbone"], function($
         "": "index",  //Landing page
         "browse/:query": "browse", // #browse/php
         "browse/subject/:query": "subject",
-        "browse/publisher/:query": "publisher",
-        "scroll/:query/:id": "scroll"
+        "browse/publisher/:query": "publisher"
     },
     index: function() {
       var search = new SearchView();
@@ -266,10 +288,6 @@ define(["jquery", "jqueryui", "modernizr", "underscore", "backbone"], function($
     publisher: function( term ) {
       var search = new SearchView();
       search.browse('+inpublisher:'+term);
-    },
-    scroll: function( term, id ) {
-      var search = new SearchView();
-      search.morebooks(term, id);
     }
   });
 
