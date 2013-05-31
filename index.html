@@ -41,7 +41,7 @@
         </div>
      </div><!-- //wrap-book -->
  
-    <div class="wrap-info">
+    <div id="wrap-info">
         <%= (volumeInfo.title ? '<h1>'+volumeInfo.title+'</h1>' : '') %>
         <%= (volumeInfo.subtitle ? '<h3>'+volumeInfo.subtitle+'</h3>' : '') %>
         <%= (volumeInfo.authors ? '<br /><strong>Author: '+volumeInfo.authors+'</strong>' : '') %>
@@ -49,7 +49,7 @@
         <%= (volumeInfo.description ? '<div class="description"><div class="more-block">'+volumeInfo.description+'</div></div>' : '<p>No description found</p>') %>
         <%= (accessInfo.webReaderLink ? '<a class="btn" target="_blank" href="'+accessInfo.webReaderLink+'">Preview on Google</a>' : '') %>
       </div><!-- //wrap-info -->
-    </div><!-- //detail-view-template -->
+    </div>
   </script>
 
   </div>

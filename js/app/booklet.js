@@ -194,8 +194,8 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
 
       /* Black overlay */
       var overlay = '<div id="overlay" class="fade-in"></div>';
-      $(this.el).append(overlay);
-      $(this.el).next().find('li').find('.book').addClass('removeTransform');
+      this.$el.append(overlay);
+      this.$el.next().find('li').find('.book').addClass('removeTransform');
 
       /* Define JSON objects */
       this.model.attributes.description = this.model.attributes.description || {};
@@ -212,9 +212,9 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
            // console.log(detail.toJSON());
             var view = _.template( $("#detail_template").html(), detail.toJSON());
 
-            $('#book-details').append(view).find('#detail-view-template').show().addClass('down');
+            $("#book-details").append(view).find('#detail-view-template').show().addClass('down');
 
-            var descToggle = new DescriptionView();
+            var descToggle = new DescriptionView({ el: "#wrap-info" });
             descToggle.render();
             descToggle.undelegate(); //todo: get rid of zombie views better
         }
@@ -233,9 +233,9 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
   });
 
   var DescriptionView = Backbone.View.extend({
-    el: $("#book-details"),
     
     render: function() {
+        console.log(this.$el.next().html());
         var adjustheight = 200;
         var moreText = "More »";
         this.$el.find(".description").find(".more-block").css('height', adjustheight).css('overflow', 'hidden');
