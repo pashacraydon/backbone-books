@@ -10,10 +10,17 @@ body {
 	width: 100%;
 	height: 100%;
 	position: fixed;
-	background-color: rgba(255,255,255,0.7);
+	background-color: rgba(255,255,255,1);
 	top: 0;
 	left: 0;
 	z-index: 999999;
+}
+
+.fade-in {
+	opacity: 0.7;
+	-webkit-transition: opacity 0.15s linear;
+	-moz-transition: opacity 0.15s linear;
+	transition: opacity 0.15s linea
 }
 
 .placeholder {
@@ -155,11 +162,20 @@ textarea:focus, input:focus{
 	text-decoration: none;
 	-webkit-border-radius: 2px;
 	border-radius: 2px;
+	-webkit-transition: 0.5s ease;
+	-moz-transition: 0.5s ease;
+	-ms-transition: 0.5s ease;
+	-o-transition: 0.5s ease;
+	transition: 0.5s ease;
 }
 
 
 .btn:hover {
 	border: 2px solid #fff;
+}
+
+.btn:active {
+	background-color: #FFF;
 }
 
 .description {
@@ -189,9 +205,9 @@ textarea:focus, input:focus{
 }
 
 /* Detail view */
-#detail-view-template {
+#detail-view-template.fade.in {
 	position: fixed;
-	top: 100px;
+	top: 10%;
 	left: 50%;
 	margin: 0 0 0 -400px;
 	width: 800px;
@@ -206,6 +222,16 @@ textarea:focus, input:focus{
 	max-height: 600px;
 	overflow: auto;
 }
+
+.fade {
+   top: -200px;
+}
+.fade.in {
+	-webkit-transition: opacity 0.3s linear,top 0.5s ease-out;
+	-moz-transition: opacity 0.3s linear,top 0.5s ease-out;
+	transition: opacity 0.3s linear,top 0.5s ease-out;
+}
+
 
 #detail-view-template .book {
 	float:left;
@@ -238,7 +264,6 @@ a.close-detail {
 }
 
 /* 3d css book covers
-   http://srobbin.com/blog/3d-css-book-covers/
 ------------------------------------------------*/
 .book {
   display: inline-block;
@@ -257,6 +282,10 @@ a.close-detail {
   -ms-perspective: 100px;
 }
 
+.csstransforms3d  #books ul li:hover {
+	z-index: 999999999;
+}
+
 .csstransforms3d  .book {
   position: relative;
   -moz-perspective: 100px;
@@ -266,8 +295,17 @@ a.close-detail {
   outline: 1px solid transparent; /* Helps smooth jagged edges in Firefox */
   box-shadow: none;
   margin: 0;
+  -webkit-transition: 125ms linear;
+  -moz-transition: 125ms linear;
+  transition: 125ms linear;
 }
 
+.csstransforms3d  li .book:hover {
+  -moz-perspective: 100px;
+  -moz-transform: rotateY(-5deg) scale(1.1,1.1);
+  -webkit-transform: perspective(100) rotateY(-5deg) scale(1.1,1.1);
+  -ms-transform: rotateY(-5deg) scale(1.1,1.1);
+}
 /* Safari 3d transform are buggy with z-index overlays */
 .safari.csstransforms3d .book.removeTransform {
   -webkit-transform: translate3d(0,0,0);

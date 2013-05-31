@@ -200,7 +200,7 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
     initialize: function() {
 
       /* Black overlay */
-      var overlay = '<div id="overlay"></div>';
+      var overlay = '<div id="overlay" class="fade-in"></div>';
       $(this.el).append(overlay);
       $(this.el).next().find('li').find('.book').addClass('removeTransform');
 
@@ -218,7 +218,8 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
             var detail = new BookModel(data);
            // console.log(detail.toJSON());
             var view = _.template( $("#detail_template").html(), detail.toJSON());
-            $("#book-details").append(view);
+
+            $('#book-details').append(view).find('#detail-view-template').show().addClass('in');
 
             /* Description Toggle, need a new view else this one loads too late for jquery */
             var descToggle = new DescriptionView();
@@ -229,7 +230,8 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
     },
     hide: function(e) {
        e.preventDefault();
-       $("#book-details").empty();
+       this.$el.find('#detail-view-template').removeClass('in').hide().remove();
+       this.$el.find('#overlay').remove();
        this.$el.next().find('li').find('.book').removeClass('removeTransform');
     },
     events: {
