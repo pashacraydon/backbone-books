@@ -56,7 +56,6 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
         this.query(term, index="0");  //Do a search with query passed in from a function
       },
       query: function( term, index ) {
-          //alert('term: '+term+' index: '+index);
           //Query the Google Books API and return json
           $.ajax({
            url: 'https://www.googleapis.com/books/v1/volumes?',
@@ -75,12 +74,6 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
                         Books.add(book);
                     }
                   }
-
-                  /* _.each(Books.models, function (item) {
-                    console.log(item.toJSON());
-                    var bookView = new BookView({ model: item });
-                    bookView.render();
-                  }, this); */
 
                   var item = new AllBooksView({ collection: Books });
                   item.render();
@@ -138,7 +131,7 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
       render: function(term, index) {
          this.$el.find('.wrap-btn').remove();
          var countIndex = parseInt(index) + parseInt(num_books);
-         var morebtn = '<div class="wrap-btn" style="text-align: center;"><a data-index="'+countIndex+'" data-term="'+term+'" class="btn more-button" href="#">Load more of "'+term+'"</a></div>';
+         var morebtn = '<div class="wrap-btn" style="text-align: center;"><a data-index="'+countIndex+'" data-term="'+term+'" class="btn more-button" href="#"> <strong>&#43;</strong> Load some more books</a></div>';
          this.$el.append(morebtn);
       }, 
       morebooks: function(e) {
@@ -219,18 +212,17 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
            // console.log(detail.toJSON());
             var view = _.template( $("#detail_template").html(), detail.toJSON());
 
-            $('#book-details').append(view).find('#detail-view-template').show().addClass('in');
+            $('#book-details').append(view).find('#detail-view-template').show().addClass('down');
 
-            /* Description Toggle, need a new view else this one loads too late for jquery */
             var descToggle = new DescriptionView();
             descToggle.render();
-            descToggle.undelegate();
+            descToggle.undelegate(); //todo: get rid of zombie views better
         }
       });
     },
     hide: function(e) {
        e.preventDefault();
-       this.$el.find('#detail-view-template').removeClass('in').hide().remove();
+       this.$el.find('#detail-view-template').remove();
        this.$el.find('#overlay').remove();
        this.$el.next().find('li').find('.book').removeClass('removeTransform');
     },
@@ -244,25 +236,27 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
     el: $("#book-details"),
     
     render: function() {
-        var adjustheight = 100;
+        var adjustheight = 200;
         var moreText = "More »";
-        $(".description .more-block").css('height', adjustheight).css('overflow', 'hidden');
-        $(".description").append('<a href="#" class="more"></a>');
-        $("a.more").text(moreText);
+        this.$el.find(".description").find(".more-block").css('height', adjustheight).css('overflow', 'hidden');
+        this.$el.find(".description").append('<div class="hide-description overflow"><a href="#" class="more"></a></div>');
+        this.$el.find("a.more").text(moreText);
        // console.log($(this.el).html());
     },
     more: function(e) {
         e.preventDefault();
         var lessText = "« Less";
-        $(".more-block").css('height', 'auto').css('overflow', 'visible');
-        $("a.more").text(lessText).addClass('less');
+        this.$el.find(".description").find(".more-block").css('height', 'auto').css('overflow', 'visible');
+        this.$el.find(".hide-description").removeClass('overflow');
+        this.$el.find("a.more").text(lessText).addClass('less');
     },
     less: function(e) {
         e.preventDefault();
-        var adjustheight = 100;
+        var adjustheight = 200;
         var moreText = "More »";
-        $(".more-block").css('height', adjustheight).css('overflow', 'hidden');
-        $("a.more").text(moreText).removeClass('less');
+        this.$el.find(".description").find(".more-block").css('height', adjustheight).css('overflow', 'hidden');
+        this.$el.find(".hide-description").addClass('overflow');
+        this.$el.find("a.more").text(moreText).removeClass('less');
     },
     events: {
         "click .more": "more",

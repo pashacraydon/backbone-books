@@ -6,28 +6,6 @@ body {
 	padding-bottom: 3em;
 }
 
-#overlay {
-	width: 100%;
-	height: 100%;
-	position: fixed;
-	background-color: rgba(255,255,255,1);
-	top: 0;
-	left: 0;
-	z-index: 999999;
-}
-
-.fade-in {
-	opacity: 0.7;
-	-webkit-transition: opacity 0.15s linear;
-	-moz-transition: opacity 0.15s linear;
-	transition: opacity 0.15s linea
-}
-
-.placeholder {
-	width: 128px;
-	height: 195px;
-	background-color: #fff;
-}
 h1 {
 	line-height: 1.3em;
 	margin: 10px 0 0;
@@ -50,15 +28,16 @@ a:visited {
 	color: #005598;
 }
 
+.placeholder {
+	width: 128px;
+	height: 195px;
+	background-color: #fff;
+}
+
 #main {
    max-width: 1200px;
    width: 100%;
    margin: 0 auto;
-}
-.boot-title {
-	line-height: 1.3em;
-	font-size: 0.8em;
-	width: 128px;
 }
 
 #books {
@@ -167,28 +146,66 @@ textarea:focus, input:focus{
 	-ms-transition: 0.5s ease;
 	-o-transition: 0.5s ease;
 	transition: 0.5s ease;
+	display: inline-block;
+	margin-top: 1em;
 }
 
 
 .btn:hover {
-	border: 2px solid #fff;
+	border: 2px solid #CCC;
+	background-color: #FFF;
 }
 
 .btn:active {
-	background-color: #FFF;
+	background-color: #444;
+	color: #fff;
 }
 
 .description {
 	padding-bottom: 1.5em;
+	position: relative;
+}
+
+.hide-description {
+	border: none;
+	position: absolute;
+	bottom: 25px;
+	width: 100%;
+	height: 100px;
+}
+
+.hide-description.overflow {
+	background: -moz-linear-gradient(top,  rgba(255,255,255,0) 0%, rgba(255,255,255,1) 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0)), color-stop(100%,rgba(255,255,255,1))); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00ffffff', endColorstr='#ffffff',GradientType=0 ); /* IE6-9 */
+}
+
+.hide-description a {
+	position: absolute;
+	right: 0;
+	bottom: -20px;
+	background-color: #CCC;
+	color: #fff;
+	text-decoration: none;
+	padding: 2px 8px 0;
+	-webkit-border-radius: 3px;
+	border-radius: 3px;
 }
 
 /* Autocomplete */
 .ui-autocomplete {
-	background: rgba(255,255,255,0.9) none no-repeat scroll 0 0 !important;
+	background: #fff none no-repeat scroll 0 0 !important;
 	-webkit-border-radius: 0px !important;
 	border-radius: 0px !important;
 	border: none !important;
 	z-index: 999999 !important;
+	max-width: 800px;
+   -webkit-box-shadow: 3px 15px 15px rgba(0,0,0,0.2);
+   box-shadow: 3px 15px 15px rgba(0,0,0,0.2);
 }
 
 .ui-autocomplete li a:hover,
@@ -197,6 +214,7 @@ textarea:focus, input:focus{
 	background: #ccffff none no-repeat scroll 0 0 !important;
 	border: none !important;
 	color: #666 !important;
+	text-shadow: 1px 1px #fff;
 }
 
 .ui-autocomplete li {
@@ -205,33 +223,52 @@ textarea:focus, input:focus{
 }
 
 /* Detail view */
-#detail-view-template.fade.in {
+#detail-view-template {
 	position: fixed;
-	top: 10%;
+	top: -600px;
 	left: 50%;
 	margin: 0 0 0 -400px;
 	width: 800px;
 	-webkit-box-shadow: 0 8px 65px rgba(0, 0, 0, 0.5);
 	box-shadow: 0 8px 65px rgba(0, 0, 0, 0.5);
 	z-index: 9999999;
-	background-color: rgba(255,255,255,0.9);
+	background-color: #fff;
 	border: 1px solid #999;
 	padding: 50px;
 	-webkit-border-radius: 5px;
 	border-radius: 5px;
 	max-height: 600px;
 	overflow: auto;
+	opacity: 0;
 }
 
-.fade {
-   top: -200px;
-}
-.fade.in {
-	-webkit-transition: opacity 0.3s linear,top 0.5s ease-out;
-	-moz-transition: opacity 0.3s linear,top 0.5s ease-out;
-	transition: opacity 0.3s linear,top 0.5s ease-out;
+#detail-view-template.fade.down {
+	top: 10%;
+	opacity: 1;
 }
 
+#overlay {
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	background-color: rgba(0, 0, 0, 1);
+	top: 0;
+	left: 0;
+	z-index: 999999;
+	opacity: 0.35;
+}
+
+.fade.down {
+	-webkit-transition: opacity 0.5s linear,top 0.3s ease-out;
+	-moz-transition: opacity 0.5s linear,top 0.3s ease-out;
+	transition: opacity 0.5s linear,top 0.3s ease-out;
+}
+
+.fade-in {
+	-webkit-transition: opacity 0.15s linear;
+	-moz-transition: opacity 0.15s linear;
+	transition: opacity 0.15s linear;
+}
 
 #detail-view-template .book {
 	float:left;
@@ -241,6 +278,8 @@ textarea:focus, input:focus{
 #detail-view-template .wrap-book {
     margin: 10px 50px 20px 0;
     float: left;
+    position: relative;
+    z-index: 10;
 }
 
 a.close-detail {
