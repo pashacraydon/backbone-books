@@ -224,7 +224,7 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
        e.preventDefault();
        this.$el.find('#detail-view-template').remove();
        this.$el.find('#overlay').remove();
-       this.$el.next().find('li').find('.book').removeClass('removeTransform');
+       this.$el.next().find('li').find('.book').removeClass('removeTransform'); //CSS3 Transforms have odd z-index issue
     },
     events: {
         "click .close-detail": "hide",
@@ -235,13 +235,11 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
   var DescriptionView = Backbone.View.extend({
     
     render: function() {
-        console.log(this.$el.next().html());
         var adjustheight = 200;
         var moreText = "More »";
         this.$el.find(".description").find(".more-block").css('height', adjustheight).css('overflow', 'hidden');
         this.$el.find(".description").append('<div class="hide-description overflow"><a href="#" class="more"></a></div>');
         this.$el.find("a.more").text(moreText);
-       // console.log($(this.el).html());
     },
     more: function(e) {
         e.preventDefault();
