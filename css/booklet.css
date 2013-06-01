@@ -225,13 +225,13 @@ textarea:focus, input:focus{
 /* Detail view */
 #detail-view-template {
 	position: fixed;
+	z-index: 99999;
 	top: -600px;
 	left: 50%;
 	margin: 0 0 0 -400px;
 	width: 800px;
 	-webkit-box-shadow: 0 3px 25px rgba(0, 0, 0, 0.4);
 	box-shadow: 0 3px 25px rgba(0, 0, 0, 0.4);
-	z-index: 999999;
 	background-color: #fff;
 	border: 1px solid #666;
 	padding: 50px;
@@ -252,17 +252,6 @@ textarea:focus, input:focus{
 	opacity: 0;
 }
 
-#overlay {
-	width: 100%;
-	height: 100%;
-	position: fixed;
-	background-color: rgba(0, 0, 0, 1);
-	top: 0;
-	left: 0;
-	z-index: 999990;
-	opacity: 0.4;
-}
-
 .fade.down {
 	-webkit-transition: opacity 0.5s linear,top 0.3s ease-out;
 	-moz-transition: opacity 0.5s linear,top 0.3s ease-out;
@@ -275,10 +264,16 @@ textarea:focus, input:focus{
 	transition: opacity 0.5s linear,top 0.5s ease-out;
 }
 
-.fade-in {
-	-webkit-transition: opacity 0.15s linear;
-	-moz-transition: opacity 0.15s linear;
-	transition: opacity 0.15s linear;
+
+#overlay {
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	background-color: #FFF;
+	top: 0;
+	left: 0;
+	opacity: 0.5;
+	z-index: 99990;
 }
 
 #detail-view-template .book {

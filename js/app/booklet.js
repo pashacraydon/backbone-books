@@ -193,8 +193,11 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
     initialize: function() {
 
       /* Black overlay */
-      var overlay = '<div id="overlay" class="fade-in"></div>';
-      this.$el.append(overlay);
+      this.$el.find('#overlay').remove();
+      var overlay = '<div id="overlay" style="display: none;""></div>';
+      this.$el.append(overlay).find('#overlay').fadeIn('slow');
+
+      /* css3 transforms are buggy with z-index, need to remove them under overlay */
       this.$el.next().find('li').find('.book').addClass('removeTransform');
 
       /* Define JSON objects */
@@ -212,6 +215,7 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
            // console.log(detail.toJSON());
             var view = _.template( $("#detail_template").html(), detail.toJSON());
 
+            $("#book-details").find('#detail-view-template').remove();
             $("#book-details").append(view).find('#detail-view-template').show().addClass('down');
 
             var descToggle = new DescriptionView({ el: "#wrap-info" });
@@ -222,8 +226,8 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
     },
     hide: function(e) {
        e.preventDefault();
-       this.$el.find('#detail-view-template').remove();
-       this.$el.find('#overlay').remove();
+       this.$el.find('#detail-view-template').removeClass('down').addClass('up');
+       this.$el.find('#overlay').fadeOut('slow');
        this.$el.next().find('li').find('.book').removeClass('removeTransform'); //CSS3 Transforms have odd z-index issue
     },
     events: {
