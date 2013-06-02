@@ -6,15 +6,14 @@ define(["jquery",
         "underscore", 
         "backbone"], 
 function($) {
-
-  $(function() {
-
   'use strict'
 
+  var api_key, num_books, counter;
+
   /* Please use your own API key, thanks! */
-  var api_key = 'AIzaSyBhBph_ccmIlFn9YSrvhCE_8zrYxazyqJ8';
-  var num_books = 18;
-  var counter = 9999;
+  api_key = 'AIzaSyBhBph_ccmIlFn9YSrvhCE_8zrYxazyqJ8';
+  num_books = 18;
+  counter = 9999;
 
   /* Initiate a Book Model */
   var BookModel = Backbone.Model.extend({
@@ -47,9 +46,8 @@ function($) {
       }
   }
 
-  /* Search the API */
   var SearchView = Backbone.View.extend({
-      el: $("#search_form"),  //Bind this view to the search form
+      el: $("#search_form"), 
 
       initialize: _.once(function() {
          this.browse('a dance with dragons'); //Load initial titles just once
@@ -57,11 +55,11 @@ function($) {
       }),
       search: function( e ){
         e.preventDefault();  
-        $('#books').html(''); //Remove previous search
+        $('#books').html('');
         this.query($('#search_input').val(), "0"); //Do a search with the form input as the query
       },
       browse: function( term ){
-        $('#books').html(''); //Remove previous search
+        $('#books').html(''); 
         this.query(term, "0");  //Do a search with query passed in from a function
       },
       query: function( term, index ) {
@@ -87,11 +85,7 @@ function($) {
                   var item = new AllBooksView({ collection: Books });
                   item.render();
 
-                  if (index > 0) {
-                       $("#books").append(item.el);
-                  } else {
-                      $("#books").html(item.el);
-                  }
+                  index > 0 ? $("#books").append(item.el) : $("#books").html(item.el);
 
                   if (data.error) {
                    // console.log(data.error.message);
@@ -103,12 +97,12 @@ function($) {
           more.render(term, index);
 
       },
-      autocomplete: function() {
+      autocomplete: function( e ) {
         var term = $('#search_input').val();
 
         $( "#search_input" ).autocomplete({
             source: function( request, response ) {
-              url = 'https://www.googleapis.com/books/v1/volumes?q='+encodeURIComponent(term)+'&maxResults=8&key='+api_key+'&fields=totalItems,items(accessInfo,volumeInfo)';
+              var url = 'https://www.googleapis.com/books/v1/volumes?q='+encodeURIComponent(term)+'&maxResults=8&key='+api_key+'&fields=totalItems,items(accessInfo,volumeInfo)';
               $.getJSON(url + '&callback=?', function(data) {
                  var dropdown = [];
                  for(var i in data.items) {
@@ -129,7 +123,7 @@ function($) {
         });
       },
       events: {
-        "submit": "search", //Initiate search function, when the form with id #search_form (el) is submitted
+        "submit": "search", 
         "keyup": "autocomplete"
       }
   });
@@ -146,7 +140,7 @@ function($) {
       morebooks: function(e) {
          var term = $('.more-button').data('term');
          var index = $('.more-button').data('index');
-       //  alert(index+' '+term);
+
          e.preventDefault(); 
          var loadMore = new SearchView();
          loadMore.query(term, index);
@@ -189,7 +183,7 @@ function($) {
     detail: function(model) {
        var bookDetail = new DetailView({ el: $("#book-details"), model: model });
        bookDetail.render();
-       bookDetail.undelegate();
+       bookDetail.undelegate();  //todo: get rid of zombie views better
     },
     events: {
         "click": "clicked"
@@ -275,10 +269,9 @@ function($) {
     }
   });
 
-  /* Some browse pages */
   var AppRouter = Backbone.Router.extend({
     routes: {
-        "": "index",  //Landing page
+        "": "index",
         "browse/:query": "browse", // #browse/php
         "browse/subject/:query": "subject",
         "browse/publisher/:query": "publisher"
@@ -303,5 +296,4 @@ function($) {
   var app = new AppRouter();
   Backbone.history.start(); 
 
-  });
 });
