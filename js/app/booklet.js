@@ -1,6 +1,15 @@
 
-define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore", "backbone"], function($) {
+define(["jquery", 
+        "jqueryui", 
+        "css_browser_selector", 
+        "modernizr", 
+        "underscore", 
+        "backbone"], 
+function($) {
+
   $(function() {
+
+  'use strict'
 
   /* Please use your own API key, thanks! */
   var api_key = 'AIzaSyBhBph_ccmIlFn9YSrvhCE_8zrYxazyqJ8';
@@ -49,11 +58,11 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
       search: function( e ){
         e.preventDefault();  
         $('#books').html(''); //Remove previous search
-        this.query($('#search_input').val(), index='0'); //Do a search with the form input as the query
+        this.query($('#search_input').val(), "0"); //Do a search with the form input as the query
       },
       browse: function( term ){
         $('#books').html(''); //Remove previous search
-        this.query(term, index="0");  //Do a search with query passed in from a function
+        this.query(term, "0");  //Do a search with query passed in from a function
       },
       query: function( term, index ) {
           //Query the Google Books API and return json
@@ -94,7 +103,7 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
           more.render(term, index);
 
       },
-      autocomplete: function( e ) {
+      autocomplete: function() {
         var term = $('#search_input').val();
 
         $( "#search_input" ).autocomplete({
@@ -103,7 +112,7 @@ define(["jquery", "jqueryui", "css_browser_selector", "modernizr", "underscore",
               $.getJSON(url + '&callback=?', function(data) {
                  var dropdown = [];
                  for(var i in data.items) {
-                    var subtitle = typeof data.items[i].volumeInfo.subtitle != "undefined" ? ': '+data.items[i].volumeInfo.subtitle : '';
+                    var subtitle = typeof data.items[i].volumeInfo.subtitle !== "undefined" ? ': '+data.items[i].volumeInfo.subtitle : '';
                     var ele = {};
                     ele = data.items[i].volumeInfo.title+subtitle; //Create array of object attributes autocomplete can parse
                     dropdown.push(ele);
