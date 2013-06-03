@@ -14,18 +14,18 @@ requirejs.config({
       "backbone": "//cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min"
     },
     shim: {
-    	'backbone': {
-    		deps: ['underscore', 'jquery'],
-    		exposts: 'backbone'
+        'backbone': {
+    	    deps: ['underscore', 'jquery'],
+    	    exports: 'backbone'
     	},
-      'jqueryui': {
-        deps: ['jquery']
-      },
-      'modernizr': {
-        deps: ['jquery']
-      },
-    	'underscore': {
-    		exports: '_'
+        'jqueryui': {
+            deps: ['jquery']
+        },
+        'modernizr': {
+            deps: ['jquery']
+        },
+        'underscore': {
+    	    exports: '_'
     	},
     	'booklet': {
     		deps: ['jquery', 'backbone', 'jqueryui', 'moderniz']
