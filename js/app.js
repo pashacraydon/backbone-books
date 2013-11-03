@@ -25,9 +25,10 @@ requirejs.config({
       },
     	'app/_init': {
     		deps: ['jquery', 'underscore', 'backbone', 'jqueryui', 'modernizr']
-    	},
     }
+  }
 });
 
 // Load the main app module to start the app
 requirejs(["app/_init"]);
+
