@@ -1,52 +1,18 @@
+define(function (require) {
+    var _ = require('underscore'),
+      $ = require('jquery'),
+      Backbone = require('backbone'),
+      v = require('app/utils/variables'),
+      C = require('app/collections/BookCollection'),
+      M = require('app/models/BookModel'),
+      SearchView,
+      loadMoreView,
+      BookView,
+      DescriptionView,
+      DetailView,
+      AllBooksView;
 
-define(["jquery", 
-        "jqueryui", 
-        "css_browser_selector", 
-        "modernizr", 
-        "underscore", 
-        "backbone"], 
-function($) {
-  'use strict'
-
-  var api_key, num_books, counter;
-
-  /* Please use your own API key, thanks! */
-  api_key = 'AIzaSyBhBph_ccmIlFn9YSrvhCE_8zrYxazyqJ8';
-  num_books = 18;
-  counter = 9999;
-
-  /* Initiate a Book Model */
-  var BookModel = Backbone.Model.extend({
-    //If JSON field is 'undefined', prevent ajax error by supplying null values with an empty string default
-    defaults: {
-        "volumeInfo": [
-           {
-            "description": "",
-            "title": "",
-               "imageLinks": [
-                  {
-                    "smallThumbnail": "",
-                    "thumbnail": ""
-                  }
-               ]
-           }
-        ]
-    }
-  });
-
-  var BookCollection = Backbone.Collection.extend({
-        model: BookModel
-    });
-
-  Backbone.View.prototype.close = function(){
-      this.remove();
-      this.unbind();
-      if (this.onClose){
-        this.onClose();
-      }
-  }
-
-  var SearchView = Backbone.View.extend({
+  SearchView = Backbone.View.extend({
       el: $("#search_form"), 
 
       initialize: _.once(function() {
@@ -66,10 +32,10 @@ function($) {
           //Query the Google Books API and return json
           $.ajax({
            url: 'https://www.googleapis.com/books/v1/volumes?',
-            data: 'q='+encodeURIComponent(term)+'&startIndex='+index+'&maxResults='+num_books+'&key='+api_key+'&fields=totalItems,items(id,volumeInfo)',
+            data: 'q='+encodeURIComponent(term)+'&startIndex='+index+'&maxResults='+v.NUM_BOOKS+'&key='+v.API_KEY+'&fields=totalItems,items(id,volumeInfo)',
             dataType: 'jsonp',
               success: function(data) {
-                var Books = new BookCollection();
+                var Books = new C.BookCollection();
 
                   //Put JSON API into a model, into a collection
                   for(var i in data.items) {
@@ -77,7 +43,7 @@ function($) {
                     data.items[i].volumeInfo.imageLinks = data.items[i].volumeInfo.imageLinks || {}; 
                     data.items[i].volumeInfo.imageLinks.thumbnail = data.items[i].volumeInfo.imageLinks.thumbnail || '';
                     if (data.items[i].volumeInfo.imageLinks.thumbnail) {
-                        var book = new BookModel(data.items[i]);
+                        var book = new M.BookModel(data.items[i]);
                         Books.add(book);
                     }
                   }
@@ -102,7 +68,7 @@ function($) {
 
         $( "#search_input" ).autocomplete({
             source: function( request, response ) {
-              var url = 'https://www.googleapis.com/books/v1/volumes?q='+encodeURIComponent(term)+'&maxResults=8&key='+api_key+'&fields=totalItems,items(accessInfo,volumeInfo)';
+              var url = 'https://www.googleapis.com/books/v1/volumes?q='+encodeURIComponent(term)+'&maxResults=8&key='+v.API_KEY+'&fields=totalItems,items(accessInfo,volumeInfo)';
               $.getJSON(url + '&callback=?', function(data) {
                  var dropdown = [];
                  for(var i in data.items) {
@@ -128,12 +94,12 @@ function($) {
       }
   });
 
-  var loadMoreView = Backbone.View.extend({
+  loadMoreView = Backbone.View.extend({
       el: $("#loading"),
 
       render: function(term, index) {
          this.$el.find('.wrap-btn').remove();
-         var countIndex = parseInt(index) + parseInt(num_books);
+         var countIndex = parseInt(index) + parseInt(v.NUM_BOOKS);
          var morebtn = '<div class="wrap-btn" style="text-align: center;"><a data-index="'+countIndex+'" data-term="'+term+'" class="btn more-button" href="#"> <strong>&#43;</strong> Load some more books</a></div>';
          this.$el.append(morebtn);
       }, 
@@ -151,7 +117,7 @@ function($) {
       }
   });
 
-  var AllBooksView = Backbone.View.extend({
+  AllBooksView = Backbone.View.extend({
     tagName: "ul",
 
     initialize: function(){
@@ -169,7 +135,7 @@ function($) {
   });
 
 
-  var BookView = Backbone.View.extend({
+  BookView = Backbone.View.extend({
     tagName: "li",
 
     clicked: function(e){
@@ -178,7 +144,7 @@ function($) {
     },
     render: function(){
        var book = _.template( $("#books_template").html(), this.model.toJSON());
-       this.$el.append(book).css({'z-index':''+counter--+''});
+       this.$el.append(book).css({'z-index':''+v.counter--+''});
     },
     detail: function(model) {
        var bookDetail = new DetailView({ el: $("#book-details"), model: model });
@@ -190,7 +156,7 @@ function($) {
     }
   });
 
-  var DetailView = Backbone.View.extend({
+  DetailView = Backbone.View.extend({
     el: $("#book-details"),
 
     initialize: function() {
@@ -212,9 +178,9 @@ function($) {
       $.ajax({
         url: 'https://www.googleapis.com/books/v1/volumes/'+this.model.id,
         dataType: 'jsonp',
-        data: 'fields=accessInfo,volumeInfo&key='+api_key,
+        data: 'fields=accessInfo,volumeInfo&key='+v.API_KEY,
         success: function (data) {
-            var detail = new BookModel(data);
+            var detail = new M.BookModel(data);
            // console.log(detail.toJSON());
             var view = _.template( $("#detail_template").html(), detail.toJSON());
 
@@ -239,7 +205,7 @@ function($) {
     }
   });
 
-  var DescriptionView = Backbone.View.extend({
+  DescriptionView = Backbone.View.extend({
     
     render: function() {
         var adjustheight = 200;
@@ -269,31 +235,14 @@ function($) {
     }
   });
 
-  var AppRouter = Backbone.Router.extend({
-    routes: {
-        "": "index",
-        "browse/:query": "browse", // #browse/php
-        "browse/subject/:query": "subject",
-        "browse/publisher/:query": "publisher"
-    },
-    index: function() {
-      var search = new SearchView();
-    },
-    browse: function( term ) {
-      var search = new SearchView();
-      search.browse(term);
-    },
-    subject: function( term ) {
-      var search = new SearchView();
-      search.browse('+subject:'+term);
-    },
-    publisher: function( term ) {
-      var search = new SearchView();
-      search.browse('+inpublisher:'+term);
-    }
-  });
-
-  var app = new AppRouter();
-  Backbone.history.start(); 
+  // public API
+  return {
+      SearchView: SearchView,
+      loadMoreView: loadMoreView,
+      BookView: BookView,
+      DescriptionView: DescriptionView,
+      DetailView: DetailView,
+      AllBooksView: AllBooksView
+  };
 
 });
