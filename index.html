@@ -14,17 +14,19 @@
   </head>
   <body>
  
+ <header id="search">
+    <form id="search_form" action="" method="POST">
+        <input autocomplete="off" autofocus="true" type="text" name="q" id="search_input" value="" placeholder="Search for a book, e.g.: 'a dance with dragons'" />
+        <button id="search_button" class="btn btn-large btn-primary" type="submit">Go</button>
+    </form>
+ </header>
   <div id="wrapper">
 
-  <form id="search_form" action="" method="POST">
-      <input autocomplete="off" autofocus="true" type="text" name="q" id="search_input" value="" placeholder="Search for a book, e.g.: 'a dance with dragons'" />
-      <button id="search_button" class="btn btn-large btn-primary" type="submit">Go</button>
-  </form>
-<div id="main">
-    <div id="book-details"></div>
-    <div id="books"></div>
-    <div id="loading"></div>
-</div>
+  <div id="main">
+      <div id="book-details"></div>
+      <div id="books"></div>
+      <div id="loading"></div>
+  </div>
 
   <script type="text/template" id="books_template">
      <div class="book">

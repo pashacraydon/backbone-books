@@ -2,8 +2,8 @@ body {
 	font-family: 'Josefin Sans', georgia,serif;
 	font-size: 110%;
 	line-height: 1.5em;
-	background-color: #eee;
 	padding-bottom: 3em;
+	margin: 0;
 }
 
 h1 {
@@ -93,32 +93,49 @@ a:visited {
 
 
 /* Search */
+header#search {
+	background: transparent url("../img/books.jpg") repeat scroll center center;
+	padding: 75px 0 50px;
+	border-bottom: 1px solid #888;
+}
+
 textarea:focus, input:focus{
     outline: 0;
 }
 
 #search_form input#search_input {
-	padding: 10px 30px 10px 0;
-	max-width: 500px;
+	padding: 3px 45px 3px 6px;
 	width: 100%;
 	font-size: 1.25em;
 	line-height: 1.5em;
 	height: 50px;
 	font-family: 'Josefin Sans', georgia,serif;
-	background-color: transparent;
-	border: none;
-	border-bottom: 2px solid #AAA;
+	border: 5px solid rgba(0,0,0,0.15);
+	background-color: #f6f6f6;
+    -moz-box-shadow:    inset 0 0 5px rgba(0,0,0,0.25);
+    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.25);
+    box-shadow:         inset 0 0 5px rgba(0,0,0,0.25);
+    -webkit-border-radius: 5px;
+	border-radius: 5px;
+}
+
+#search_form input#search_input:focus {
+	background-color: #f6f6f6;
 }
 
 #search_form  #search_button {
-	width: 48px;
-	height: 48px;
-	background: transparent url("../img/search.png") no-repeat scroll 0 0;
+	width: 30px;
+	height: 30px;
+	background: transparent url("../img/search.png") no-repeat scroll center center;
+	padding: 5px 3px 5px;
 	display: inline-block;
 	text-indent: -9999px;
 	border: none;
 	cursor: pointer;
 	opacity: 0.5;
+	position: absolute;
+	right: -45px;
+	top: 5px;
 }
 
 #search_form  #search_button:hover {
@@ -126,9 +143,10 @@ textarea:focus, input:focus{
 }
 
 #search_form {
-	width: 720px;
-	margin: 60px auto 0;
+	width: 520px;
+	margin: 0 auto 0;
 	text-align: center;
+	position: relative;
 }
 
 .btn {
@@ -317,6 +335,9 @@ a.close-detail {
 
 .book img { vertical-align: middle; border: none; }
 
+#books ul li {
+	margin: 5px 15px 0;
+}
 .csstransforms3d  #books ul li,
 .csstransforms3d .wrap-book {
   -moz-perspective: 100px;

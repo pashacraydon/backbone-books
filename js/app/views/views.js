@@ -15,18 +15,22 @@ define(function (require) {
   SearchView = Backbone.View.extend({
       el: $("#search_form"), 
 
+      events: {
+        "submit": "search", 
+        "keyup": "autocomplete"
+      },
       initialize: _.once(function() {
-         this.browse('a dance with dragons'); //Load initial titles just once
-         $("#search_input").focus();
+         this.browse(v.INITIAL_SEARCH); //Load initial titles just once
+         $("#search_input").focus(); 
       }),
       search: function( e ){
         e.preventDefault();  
         $('#books').html('');
-        this.query($('#search_input').val(), "0"); //Do a search with the form input as the query
+        this.query($('#search_input').val(), index='0'); //Do a search with the form input as the query
       },
       browse: function( term ){
         $('#books').html(''); 
-        this.query(term, "0");  //Do a search with query passed in from a function
+        this.query(term, index='0');  //Do a search with query passed in from a function
       },
       query: function( term, index ) {
           //Query the Google Books API and return json
@@ -64,16 +68,17 @@ define(function (require) {
 
       },
       autocomplete: function( e ) {
-        var term = $('#search_input').val();
+        var term = $('#search_input').val(),
+            apiQuery = 'https://www.googleapis.com/books/v1/volumes?q='+encodeURIComponent(term)+'&maxResults=8&key='+v.API_KEY+'&fields=totalItems,items(accessInfo,volumeInfo)';
+
 
         $( "#search_input" ).autocomplete({
             source: function( request, response ) {
-              var url = 'https://www.googleapis.com/books/v1/volumes?q='+encodeURIComponent(term)+'&maxResults=8&key='+v.API_KEY+'&fields=totalItems,items(accessInfo,volumeInfo)';
-              $.getJSON(url + '&callback=?', function(data) {
+              $.getJSON(apiQuery + '&callback=?', function(data) {
                  var dropdown = [];
                  for(var i in data.items) {
-                    var subtitle = typeof data.items[i].volumeInfo.subtitle !== "undefined" ? ': '+data.items[i].volumeInfo.subtitle : '';
-                    var ele = {};
+                    var ele = {},
+                        subtitle = typeof data.items[i].volumeInfo.subtitle !== "undefined" ? ': '+data.items[i].volumeInfo.subtitle : '';
                     ele = data.items[i].volumeInfo.title+subtitle; //Create array of object attributes autocomplete can parse
                     dropdown.push(ele);
                   }
@@ -81,39 +86,35 @@ define(function (require) {
                  response(dropdown);
               });
             },
-            focus: function( event, ui ) {
+            select: function( event, ui ) {
                 var search = new SearchView();
-                search.browse(ui.item.value, '0');
+                search.browse(ui.item.value, index='0');
                 //console.log(ui.item.value);
             }
         });
-      },
-      events: {
-        "submit": "search", 
-        "keyup": "autocomplete"
       }
   });
 
   loadMoreView = Backbone.View.extend({
       el: $("#loading"),
 
+      events: {
+         "click": "morebooks"
+      },
       render: function(term, index) {
          this.$el.find('.wrap-btn').remove();
-         var countIndex = parseInt(index) + parseInt(v.NUM_BOOKS);
-         var morebtn = '<div class="wrap-btn" style="text-align: center;"><a data-index="'+countIndex+'" data-term="'+term+'" class="btn more-button" href="#"> <strong>&#43;</strong> Load some more books</a></div>';
+         var countIndex = parseInt(index) + parseInt(v.NUM_BOOKS),
+            morebtn = '<div class="wrap-btn" style="text-align: center;"><a data-index="'+countIndex+'" data-term="'+term+'" class="btn more-button" href="#"> <strong>&#43;</strong> Load some more books</a></div>';
          this.$el.append(morebtn);
       }, 
       morebooks: function(e) {
-         var term = $('.more-button').data('term');
-         var index = $('.more-button').data('index');
+         var term = $('.more-button').data('term'),
+            index = $('.more-button').data('index'),
+            loadMore = new SearchView();
 
          e.preventDefault(); 
-         var loadMore = new SearchView();
          loadMore.query(term, index);
          loadMore.undelegate();
-      },
-      events: {
-         "click": "morebooks"
       }
   });
 
@@ -138,30 +139,34 @@ define(function (require) {
   BookView = Backbone.View.extend({
     tagName: "li",
 
+    events: {
+        "click": "clicked"
+    },
     clicked: function(e){
        e.preventDefault();
        this.detail(this.model);
     },
     render: function(){
        var book = _.template( $("#books_template").html(), this.model.toJSON());
-       this.$el.append(book).css({'z-index':''+v.counter--+''});
+       this.$el.append(book);
     },
     detail: function(model) {
        var bookDetail = new DetailView({ el: $("#book-details"), model: model });
        bookDetail.render();
        bookDetail.undelegate();  //todo: get rid of zombie views better
-    },
-    events: {
-        "click": "clicked"
     }
   });
 
   DetailView = Backbone.View.extend({
     el: $("#book-details"),
 
+    events: {
+        "click .close-detail": "hide",
+        "click #overlay": "hide"
+    },
     initialize: function() {
 
-      /* Black overlay */
+      /* Add a faded overlay */
       this.$el.find('#overlay').remove();
       var overlay = '<div id="overlay" style="display: none;""></div>';
       this.$el.append(overlay).find('#overlay').fadeIn('slow');
@@ -198,18 +203,17 @@ define(function (require) {
        this.$el.find('#detail-view-template').removeClass('down').addClass('up');
        this.$el.find('#overlay').fadeOut('slow');
        this.$el.next().find('li').find('.book').removeClass('removeTransform'); //CSS3 Transforms have odd z-index issue
-    },
-    events: {
-        "click .close-detail": "hide",
-        "click #overlay": "hide"
     }
   });
 
   DescriptionView = Backbone.View.extend({
-    
+    events: {
+        "click .more": "more",
+        "click .less": "less"
+    },
     render: function() {
-        var adjustheight = 200;
-        var moreText = "More »";
+        var adjustheight = 200,
+          moreText = "More »";
         this.$el.find(".description").find(".more-block").css('height', adjustheight).css('overflow', 'hidden');
         this.$el.find(".description").append('<div class="hide-description overflow"><a href="#" class="more"></a></div>');
         this.$el.find("a.more").text(moreText);
@@ -223,15 +227,11 @@ define(function (require) {
     },
     less: function(e) {
         e.preventDefault();
-        var adjustheight = 200;
-        var moreText = "More »";
+        var adjustheight = 200,
+          moreText = "More »";
         this.$el.find(".description").find(".more-block").css('height', adjustheight).css('overflow', 'hidden');
         this.$el.find(".hide-description").addClass('overflow');
         this.$el.find("a.more").text(moreText).removeClass('less');
-    },
-    events: {
-        "click .more": "more",
-        "click .less": "less"
     }
   });
 
