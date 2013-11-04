@@ -22,12 +22,8 @@ define(function (require) {
         "keyup": "searchAutocomplete"
       },
       initialize: _.once(function() {
-        this.topics(v.TOPICS);
+        this.queryApi('game of thrones',index='0');
       }),
-      destroy: function(){
-        this.remove();
-        this.unbind();
-      },
       search: function( e ){
         e.preventDefault();  
         $('#books').html('');  //Remove previous search
@@ -41,16 +37,6 @@ define(function (require) {
         /*
         _.map(terms, function(num,key) { 
         }); */
-        var culinary = new SearchView(),
-            art = new SearchView(),
-            entertainment = new SearchView();
-
-        culinary.queryApi('subject:Culinary',index='0');
-        $('#books').prepend('<h1>Culinary</h1>');
-        art.queryApi('subject:Art',index='0');
-        $('#books').prepend('<h1>Art</h1>');
-        entertainment.queryApi('subject:Entertainment',index='0');
-        $('#books').prepend('<h1>Entertainment</h1>');
       },
       doAjax: function ( url, data ) {
         return $.ajax({
@@ -85,11 +71,8 @@ define(function (require) {
 
           var item = new AllBooksView({ collection: Books });
           item.render();
-          //index > 0 ? $("#books").append(item.el) : $("#books").html(item.el);
-          $("#books").append(item.el);
+          index > 0 ? $("#books").append(item.el) : $("#books").html(item.el);
         });
-
-        this.destroy();
 
         var more = new loadMoreView();
         more.render(term, index);
