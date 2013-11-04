@@ -23,9 +23,12 @@ define(function (require) {
       "keyup": "searchAutocomplete"
     },
 
-    //Show an initial query, just once on the first page load
     initialize: _.once(function() {
-      this.queryApi('game of thrones',index='0');
+      //On first page load, show some topics,
+      //unless its a router
+      if (window.location.hash === '') {
+        this.topics(v.TOPICS);
+      }
     }),
 
     search: function( e ){
@@ -34,22 +37,23 @@ define(function (require) {
       //Remove previous search results
       $('#books').html('');
       //Do a search with the form input as the query
-      this.queryApi($value, index='0');
+      this.queryApi($value, index='0', v.MAX_DEFAULT);
     },
 
-    browse: function( term ){
+    browse: function(term) {
       $('#books').html(''); 
       //Do a search with query passed in from a function
-      this.queryApi(term, index='0'); 
+      this.queryApi(term, index='0', v.MAX_DEFAULT); 
     },
 
-    topics: function( terms ) {
-      /*
-      _.map(terms, function(num,key) { 
-      }); */
+    topics: function(terms) {
+      var self = this;
+      _.each(terms, function(topic) { 
+        self.queryApi('subject:'+topic.subject,index='0', maxResults='5', topic.subject);
+      }); 
     },
 
-    doAjax: function ( url, data ) {
+    doAjax: function (url, data) {
       return $.ajax({
         dataType: 'jsonp',
         data: data,
@@ -58,13 +62,14 @@ define(function (require) {
       });
     },
 
-    queryApi: function( term, index ) {
-      var url = 'https://www.googleapis.com/books/v1/volumes?',
-          data = 'q='+encodeURIComponent(term)+'&startIndex='+index+'&maxResults='+v.NUM_BOOKS+'&key='+v.API_KEY+'&fields=totalItems,items(id,volumeInfo)';
+    queryApi: function(term, index, maxResults, subject) {
+      var aj,
+          url = 'https://www.googleapis.com/books/v1/volumes?',
+          data = 'q='+encodeURIComponent(term)+'&startIndex='+index+'&maxResults='+maxResults+'&key='+v.API_KEY+'&fields=totalItems,items(id,volumeInfo)';
 
       aj = this.doAjax(url, data);
 
-      //When ajax is done
+      //jQuery promise object tells us when ajax is done
       aj.done(function () {
         var Books = new C.BookCollection(),
           data = aj.responseJSON;
@@ -82,15 +87,27 @@ define(function (require) {
           }); 
         }
 
+        //Remove old ajax data
+        delete aj;
+
         //Instantiate the AllBooksViews with a collection of books and render them
         var item = new AllBooksView({ collection: Books });
             item.render();
-            //Append new books if the index isn't 0, otherwise replace old with the new
-            index > 0 ? $("#books").append(item.el) : $("#books").html(item.el);
+
+        //If a topic, prepend with the topic title and append a 'more' link
+        if (subject) {
+          item.topic(subject);
+        }
+
+        //If the index is greater then 0 and this isn't topics, replace new books with old books. Otherwise APPEND to old books.
+        index > 0 || subject ? $("#books").append(item.el) : $("#books").html(item.el);
       });
 
-      var more = new loadMoreView();
-      more.render(term, index);
+      //Instantiate view for loading more books, except if its topics (not a search or browse)
+      if (!subject) {
+        var more = new loadMoreView();
+        more.render(term, index, maxResults);
+      }
     },
 
     searchAutocomplete: function( e ) {
@@ -119,7 +136,7 @@ define(function (require) {
           select: function( event, ui ) {
             //Instantiate a new search view and populate the autocomplete with an API query
             var search = new SearchView();
-            search.queryApi(ui.item.value, index='0');
+            search.queryApi(ui.item.value, index='0',v.MAX_DEFAULT);
           }
       });
     }
@@ -132,10 +149,11 @@ define(function (require) {
       "click": "morebooks"
     },
 
-    render: function(term, index) {
+    render: function(term, index, maxResults) {
       this.$el.find('.wrap-btn').remove();
-      var countIndex = parseInt(index) + parseInt(v.NUM_BOOKS),
-        morebtn = '<div class="wrap-btn" style="text-align: center;"><a data-index="'+countIndex+'" data-term="'+term+'" class="btn more-button" href="#"> <strong>&#43;</strong> Load some more books</a></div>';
+      var maxResults = maxResults || v.MAX_DEFAULT,
+        countIndex = parseInt(index) + parseInt(maxResults),
+        morebtn = '<div class="wrap-btn" style="text-align: center;"><a data-index="'+countIndex+'" data-term="'+term+'" class="btn more-button" href="#"> <strong>&#43;</strong> More of these books</a></div>';
         this.$el.append(morebtn);
     }, 
 
@@ -144,7 +162,7 @@ define(function (require) {
         index = $('.more-button').data('index'),
         loadMore = new SearchView();
         e.preventDefault(); 
-        loadMore.queryApi(term, index);
+        loadMore.queryApi(term, index, v.MAX_DEFAULT);
         loadMore.undelegate('#loading','click'); // Todo: do better garbarge collection
       }
   });
@@ -152,14 +170,20 @@ define(function (require) {
   AllBooksView = Backbone.View.extend({
     tagName: "ul",
 
-    initialize: function(){
+    initialize: function() {
       //bind 'this' object to book method
       _.bindAll(this, "book");
+      //helper CSS class for determining when this view has loaded, removes Ajax spinner gif in the CSS
+      $('body').addClass('loaded');
     },
 
-    render: function(){
+    render: function() {
       //Render each book in the collection
       this.collection.each(this.book); 
+    },
+
+    topic: function ( topic ) {
+      this.$el.prepend('<h1>'+topic+'</h1>').append('<a href="#browse/subject/'+topic+'">More &raquo;</a>')
     },
 
     book: function(model) {

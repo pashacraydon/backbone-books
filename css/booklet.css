@@ -2,7 +2,6 @@ body {
 	font-family: 'Josefin Sans', georgia,serif;
 	font-size: 110%;
 	line-height: 1.5em;
-	padding-bottom: 3em;
 	margin: 0;
 }
 
@@ -58,7 +57,7 @@ a:visited {
 }
 
 #books {
-	padding-top: 100px;
+	padding-top: 30px;
 }
 
 .wrap-btn {
@@ -325,9 +324,13 @@ a.close-detail {
 	margin-bottom: 50px;
 }
 
-#books > ul {
+#books {
 	background: transparent url("../img/ajax-loader.gif") no-repeat scroll center center;
-	min-height: 300px;
+	min-height: 200px;
+}
+
+.loaded #books {
+	background: transparent none no-repeat scroll 0 0;
 }
 
 /* 3d css book covers
@@ -415,5 +418,23 @@ a.close-detail {
 .gecko.csstransforms3d .wrap-book .book:after {
 	width: 7%;
 	left: 98%;
+}
+
+/* Footer */
+footer {
+	width: 100%;
+	background-color: #CCC;
+	border-top: 1px solid #888;
+	padding: 30px 0 30px;
+	margin-top: 50px;
+}
+
+footer .center {
+	max-width: 650px;
+	margin: 0 auto;
+}
+
+footer .copyright {
+	margin-top: 30px;
 }
 

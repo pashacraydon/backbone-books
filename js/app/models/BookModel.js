@@ -19,12 +19,6 @@ define(function (require) {
           ]
         }
       ]
-    },
-    initialize: function() {
-      console.log('This model has been initialized.');
-      this.on('change', function() {
-        console.log(this.model);
-      });
     }
   });
 
