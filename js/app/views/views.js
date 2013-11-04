@@ -5,6 +5,8 @@ define(function (require) {
       v = require('app/utils/variables'),
       C = require('app/collections/BookCollection'),
       M = require('app/models/BookModel'),
+      bookTemplate = require('text!app/templates/book.html'),
+      detailsTemplate = require('text!app/templates/details.html'),
       SearchView,
       loadMoreView,
       BookView,
@@ -17,79 +19,105 @@ define(function (require) {
 
       events: {
         "submit": "search", 
-        "keyup": "autocomplete"
+        "keyup": "searchAutocomplete"
       },
       initialize: _.once(function() {
-         this.browse(v.INITIAL_SEARCH); //Load initial titles just once
-         $("#search_input").focus(); 
+        this.topics(v.TOPICS);
       }),
+      destroy: function(){
+        this.remove();
+        this.unbind();
+      },
       search: function( e ){
         e.preventDefault();  
-        $('#books').html('');
-        this.query($('#search_input').val(), index='0'); //Do a search with the form input as the query
+        $('#books').html('');  //Remove previous search
+        this.queryApi($('#search_input').val(), index='0'); //Do a search with the form input as the query
       },
       browse: function( term ){
         $('#books').html(''); 
-        this.query(term, index='0');  //Do a search with query passed in from a function
+        this.queryApi(term, index='0');  //Do a search with query passed in from a function
       },
-      query: function( term, index ) {
-          //Query the Google Books API and return json
-          $.ajax({
-           url: 'https://www.googleapis.com/books/v1/volumes?',
-            data: 'q='+encodeURIComponent(term)+'&startIndex='+index+'&maxResults='+v.NUM_BOOKS+'&key='+v.API_KEY+'&fields=totalItems,items(id,volumeInfo)',
-            dataType: 'jsonp',
-              success: function(data) {
-                var Books = new C.BookCollection();
+      topics: function( terms ) {
+        /*
+        _.map(terms, function(num,key) { 
+        }); */
+        var culinary = new SearchView(),
+            art = new SearchView(),
+            entertainment = new SearchView();
 
-                  //Put JSON API into a model, into a collection
-                  for(var i in data.items) {
-                    data.items[i].volumeInfo = data.items[i].volumeInfo || {}; //Define object
-                    data.items[i].volumeInfo.imageLinks = data.items[i].volumeInfo.imageLinks || {}; 
-                    data.items[i].volumeInfo.imageLinks.thumbnail = data.items[i].volumeInfo.imageLinks.thumbnail || '';
-                    if (data.items[i].volumeInfo.imageLinks.thumbnail) {
-                        var book = new M.BookModel(data.items[i]);
-                        Books.add(book);
-                    }
-                  }
+        culinary.queryApi('subject:Culinary',index='0');
+        $('#books').prepend('<h1>Culinary</h1>');
+        art.queryApi('subject:Art',index='0');
+        $('#books').prepend('<h1>Art</h1>');
+        entertainment.queryApi('subject:Entertainment',index='0');
+        $('#books').prepend('<h1>Entertainment</h1>');
+      },
+      doAjax: function ( url, data ) {
+        return $.ajax({
+          dataType: 'jsonp',
+          data: data,
+          cache: false,
+          url: url
+        });
+      },
+      queryApi: function( term, index ) {
+        var url = 'https://www.googleapis.com/books/v1/volumes?',
+            data = 'q='+encodeURIComponent(term)+'&startIndex='+index+'&maxResults='+v.NUM_BOOKS+'&key='+v.API_KEY+'&fields=totalItems,items(id,volumeInfo)';
 
-                  var item = new AllBooksView({ collection: Books });
-                  item.render();
+        aj = this.doAjax(url, data);
 
-                  index > 0 ? $("#books").append(item.el) : $("#books").html(item.el);
+        aj.done(function () {
+          var Books = new C.BookCollection(),
+              data = aj.responseJSON;
 
-                  if (data.error) {
-                   // console.log(data.error.message);
-                  }
+          //Put JSON books into a model, then into a collection
+          if (data) {
+            for(var i in data.items) {
+              data.items[i].volumeInfo = data.items[i].volumeInfo || {}; //Define object
+              data.items[i].volumeInfo.imageLinks = data.items[i].volumeInfo.imageLinks || {}; 
+              data.items[i].volumeInfo.imageLinks.thumbnail = data.items[i].volumeInfo.imageLinks.thumbnail || '';
+              if (data.items[i].volumeInfo.imageLinks.thumbnail) {
+                var book = new M.BookModel(data.items[i]);
+                Books.add(book);
               }
-          });
+            }
+          }
 
-          var more = new loadMoreView();
-          more.render(term, index);
+          var item = new AllBooksView({ collection: Books });
+          item.render();
+          //index > 0 ? $("#books").append(item.el) : $("#books").html(item.el);
+          $("#books").append(item.el);
+        });
 
+        this.destroy();
+
+        var more = new loadMoreView();
+        more.render(term, index);
       },
-      autocomplete: function( e ) {
-        var term = $('#search_input').val(),
-            apiQuery = 'https://www.googleapis.com/books/v1/volumes?q='+encodeURIComponent(term)+'&maxResults=8&key='+v.API_KEY+'&fields=totalItems,items(accessInfo,volumeInfo)';
 
+      searchAutocomplete: function( e ) {
+        var $searchForm = $('#search_input'),
+          term = $searchForm.val(),
+          url = 'https://www.googleapis.com/books/v1/volumes?q='+encodeURIComponent(term)+'&maxResults=8&key='+v.API_KEY+'&fields=totalItems,items(accessInfo,volumeInfo)';
 
-        $( "#search_input" ).autocomplete({
-            source: function( request, response ) {
-              $.getJSON(apiQuery + '&callback=?', function(data) {
-                 var dropdown = [];
-                 for(var i in data.items) {
-                    var ele = {},
-                        subtitle = typeof data.items[i].volumeInfo.subtitle !== "undefined" ? ': '+data.items[i].volumeInfo.subtitle : '';
-                    ele = data.items[i].volumeInfo.title+subtitle; //Create array of object attributes autocomplete can parse
-                    dropdown.push(ele);
-                  }
-                 dropdown = _.unique(dropdown);
-                 response(dropdown);
+        //http://jqueryui.com/autocomplete/
+        $searchForm.autocomplete({
+          source: function( request, response ) {
+            $.getJSON(url + '&callback=?', function(data) {
+              var dropdown = [];
+              for(var i in data.items) {
+                var ele = {},
+                  subtitle = typeof data.items[i].volumeInfo.subtitle !== "undefined" ? ': '+data.items[i].volumeInfo.subtitle : '';
+                  ele = data.items[i].volumeInfo.title+subtitle; //Create array of object attributes autocomplete can parse
+                  dropdown.push(ele);
+                }
+                dropdown = _.unique(dropdown);
+                response(dropdown);
               });
             },
             select: function( event, ui ) {
-                var search = new SearchView();
-                search.browse(ui.item.value, index='0');
-                //console.log(ui.item.value);
+              var search = new SearchView();
+              search.browse(ui.item.value, index='0');
             }
         });
       }
@@ -113,8 +141,8 @@ define(function (require) {
             loadMore = new SearchView();
 
          e.preventDefault(); 
-         loadMore.query(term, index);
-         loadMore.undelegate();
+         loadMore.queryApi(term, index);
+         loadMore.undelegate(); // Todo remove ghost view better
       }
   });
 
@@ -122,11 +150,12 @@ define(function (require) {
     tagName: "ul",
 
     initialize: function(){
-        _.bindAll(this, "book");
+        _.bindAll(this, "book");  //bind 'this' object to book method
     },
     render: function(){
+        //Render each book in the collection
+        this.collection.each(this.book); 
         // console.log(this.collection.toJSON());
-        this.collection.each(this.book);
     },
     book: function(model) {
         var bookItem = new BookView({ model: model });
@@ -139,6 +168,8 @@ define(function (require) {
   BookView = Backbone.View.extend({
     tagName: "li",
 
+    template: _.template(bookTemplate),
+
     events: {
         "click": "clicked"
     },
@@ -147,7 +178,7 @@ define(function (require) {
        this.detail(this.model);
     },
     render: function(){
-       var book = _.template( $("#books_template").html(), this.model.toJSON());
+       var book = _.template(this.template(this.model.toJSON()));
        this.$el.append(book);
     },
     detail: function(model) {
@@ -158,17 +189,18 @@ define(function (require) {
   });
 
   DetailView = Backbone.View.extend({
+
     el: $("#book-details"),
 
     events: {
         "click .close-detail": "hide",
         "click #overlay": "hide"
     },
-    initialize: function() {
 
+    initialize: function() {
       /* Add a faded overlay */
-      this.$el.find('#overlay').remove();
-      var overlay = '<div id="overlay" style="display: none;""></div>';
+      this.$el.find('#overlay').remove(); //Remove previous overlay
+      var overlay = '<div id="overlay" style="display: none;"></div>';
       this.$el.append(overlay).find('#overlay').fadeIn('slow');
 
       /* css3 transforms are buggy with z-index, need to remove them under overlay */
@@ -179,15 +211,23 @@ define(function (require) {
       this.model.attributes.volumeInfo = this.model.attributes.volumeInfo || {};
       this.model.attributes.volumeInfo.imageLinks = this.model.attributes.volumeInfo.imageLinks || {};
     },
-    render: function() {
-      $.ajax({
-        url: 'https://www.googleapis.com/books/v1/volumes/'+this.model.id,
+    doAjax: function ( url, data ) {
+      return $.ajax({
         dataType: 'jsonp',
-        data: 'fields=accessInfo,volumeInfo&key='+v.API_KEY,
-        success: function (data) {
-            var detail = new M.BookModel(data);
-           // console.log(detail.toJSON());
-            var view = _.template( $("#detail_template").html(), detail.toJSON());
+        data: data,
+        url: url
+      });
+    },
+    render: function() {
+      var url = 'https://www.googleapis.com/books/v1/volumes/'+this.model.id,
+          data = 'fields=accessInfo,volumeInfo&key='+v.API_KEY;
+
+        aj = this.doAjax(url, data);
+
+        aj.done(function () {
+            var detail = new M.BookModel(aj.responseJSON),
+              //Load the books model into the details template
+              view = _.template(detailsTemplate, detail.toJSON());
 
             $("#book-details").find('#detail-view-template').remove();
             $("#book-details").append(view).find('#detail-view-template').show().addClass('down');
@@ -195,8 +235,8 @@ define(function (require) {
             var descToggle = new DescriptionView({ el: "#wrap-info" });
             descToggle.render();
             descToggle.undelegate(); //todo: get rid of zombie views better
-        }
-      });
+
+        });
     },
     hide: function(e) {
        e.preventDefault();

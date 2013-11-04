@@ -10,7 +10,8 @@ requirejs.config({
       "jquery": "//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.1/jquery.min",
       "jqueryui": "//ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min",
       css_browser_selector: "libs/css_browser_selector",
-      "modernizr": "//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min"
+      "modernizr": "//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min",
+      text: "libs/require.text"
     },
     shim: {
       underscore: {

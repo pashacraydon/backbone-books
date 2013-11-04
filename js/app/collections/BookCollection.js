@@ -8,6 +8,7 @@ define(function (require) {
         model: M.BookModel
     });
 
+
   return {
       BookCollection: BookCollection
   };
