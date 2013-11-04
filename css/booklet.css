@@ -325,6 +325,11 @@ a.close-detail {
 	margin-bottom: 50px;
 }
 
+#books > ul {
+	background: transparent url("../img/ajax-loader.gif") no-repeat scroll center center;
+	min-height: 300px;
+}
+
 /* 3d css book covers
 ------------------------------------------------*/
 .book {

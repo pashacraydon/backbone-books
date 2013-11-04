@@ -4,20 +4,21 @@ define(function (require) {
       BookModel;
 
   BookModel = Backbone.Model.extend({
-    //If JSON field is 'undefined', prevent ajax error by supplying null values with an empty string default
     defaults: {
-        "volumeInfo": [
-           {
-            "description": "",
-            "title": "",
-               "imageLinks": [
-                  {
-                    "smallThumbnail": "",
-                    "thumbnail": ""
-                  }
-               ]
-           }
-        ]
+      //Default JSON fields,
+      //Prevent 'undefined' ajax errors
+      "volumeInfo": [
+      {
+        "description": "",
+        "title": "",
+        "imageLinks": [
+          {
+            "smallThumbnail": "",
+            "thumbnail": ""
+            }
+          ]
+        }
+      ]
     },
     initialize: function() {
       console.log('This model has been initialized.');
