@@ -77,6 +77,7 @@ define(function (require) {
         //Traverse the API response and put each JSON book into a model
         if (data) {
           _.each(data.items, function(item) { 
+            //Define JSON values, this prevents ajax errors
             item.volumeInfo = item.volumeInfo || {};
             item.volumeInfo.imageLinks = item.volumeInfo.imageLinks || {};
             item.volumeInfo.imageLinks.thumbnail = item.volumeInfo.imageLinks.thumbnail || '';
@@ -97,7 +98,6 @@ define(function (require) {
         //If a topic, prepend with the topic title and append a 'more' link
         if (subject) {
           item.topic(subject, maxResults);
-          console.log(index);
         }
 
         //If the index is greater then 0 and this isn't topics, 
@@ -170,6 +170,7 @@ define(function (require) {
   });
 
   AllBooksView = Backbone.View.extend({
+    //all books go inside an unordered list tag
     tagName: "ul",
 
     initialize: function() {
@@ -180,15 +181,18 @@ define(function (require) {
     },
 
     render: function() {
-      //Render each book in the collection
+      //call 'this' views book method on each book in the collection
       this.collection.each(this.book); 
     },
 
     topic: function ( topic, maxResults ) {
+      //for frontpage topics, prepend a title and append a 'more' button
       this.$el.prepend('<h1>'+topic+'</h1>').append('<a href="#browse/subject/'+topic+'/'+maxResults+'">More &raquo;</a>');
     },
 
     book: function(model) {
+      //Instantiate a book view and populate it with a model, 
+      //then render it and append it to this views html element (tagName, unordered list)
       var bookItem = new BookView({ model: model });
       bookItem.render();
       this.$el.append(bookItem.el);
@@ -208,6 +212,8 @@ define(function (require) {
       "click": "clicked"
     },
 
+    //when a book is clicked, 
+    //call the detail method and pass in its model
     clicked: function(e){
       e.preventDefault();
       this.detail(this.model);
@@ -229,8 +235,10 @@ define(function (require) {
 
   DetailView = Backbone.View.extend({
 
+    //attach this view to the following html id
     el: $("#book-details"),
 
+    //DOM events for this view
     events: {
       "click .close-detail": "hide",
       "click #overlay": "hide"
@@ -238,14 +246,14 @@ define(function (require) {
 
     initialize: function() {
       /* Add a faded overlay */
-      this.$el.find('#overlay').remove(); //Remove previous overlay
       var overlay = '<div id="overlay" style="display: none;"></div>';
+      this.$el.find('#overlay').remove(); //Remove previous overlay
       this.$el.append(overlay).find('#overlay').fadeIn('slow');
 
-      /* css3 transforms are buggy with z-index, need to remove them under overlay */
+      /* css3 transforms are buggy with z-index, need to remove them under the overlay */
       this.$el.next().find('li').find('.book').addClass('removeTransform');
 
-      /* Define JSON objects */
+      /* Define JSON objects, this prevents ajax errors */
       this.model.attributes.description = this.model.attributes.description || {};
       this.model.attributes.volumeInfo = this.model.attributes.volumeInfo || {};
       this.model.attributes.volumeInfo.imageLinks = this.model.attributes.volumeInfo.imageLinks || {};
@@ -260,18 +268,22 @@ define(function (require) {
     },
 
     render: function() {
-      var url = 'https://www.googleapis.com/books/v1/volumes/'+this.model.id,
+      var aj,
+          url = 'https://www.googleapis.com/books/v1/volumes/'+this.model.id,
           data = 'fields=accessInfo,volumeInfo&key='+v.API_KEY,
+          $details = $("#book-details");
 
       aj = this.doAjax(url, data);
 
+      //jQuery promise object lets us know when ajax is done
       aj.done(function () {
         var detail = new M.BookModel(aj.responseJSON),
           //Load the books model into the details template
           view = _.template(detailsTemplate, detail.toJSON());
 
-          $("#book-details").find('#detail-view-template').remove();
-          $("#book-details").append(view).find('#detail-view-template').show().addClass('down');
+          //remove previous instances of this template
+          $details.find('#detail-view-template').remove();
+          $details.append(view).find('#detail-view-template').show().addClass('down');
 
           var descToggle = new DescriptionView({ el: "#wrap-info" });
           descToggle.render();
@@ -283,7 +295,7 @@ define(function (require) {
       e.preventDefault();
       this.$el.find('#detail-view-template').removeClass('down').addClass('up');
       this.$el.find('#overlay').fadeOut('slow');
-      this.$el.next().find('li').find('.book').removeClass('removeTransform'); //CSS3 Transforms have odd z-index issue
+      this.$el.next().find('li').find('.book').removeClass('removeTransform');
     }
   });
 

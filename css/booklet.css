@@ -102,7 +102,7 @@ a:visited {
 	border-bottom: 2px solid rgba(255,255,255,0.5);
 }
 #logo a:hover {
-	border-bottom: 2px solid rgba(255,255,255,1);
+	border-bottom: 2px solid rgba(255,255,255,0.8);
 }
 header#search {
 	background: transparent url("../img/books.jpg") repeat scroll center center;
