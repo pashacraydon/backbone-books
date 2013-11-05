@@ -40,10 +40,10 @@ define(function (require) {
       this.queryApi($value, index='0', v.MAX_DEFAULT);
     },
 
-    browse: function(term) {
+    browse: function(term, index, maxResults) {
       $('#books').html(''); 
       //Do a search with query passed in from a function
-      this.queryApi(term, index='0', v.MAX_DEFAULT); 
+      this.queryApi(term, index, maxResults); 
     },
 
     topics: function(terms) {
@@ -96,10 +96,12 @@ define(function (require) {
 
         //If a topic, prepend with the topic title and append a 'more' link
         if (subject) {
-          item.topic(subject);
+          item.topic(subject, maxResults);
+          console.log(index);
         }
 
-        //If the index is greater then 0 and this isn't topics, replace new books with old books. Otherwise APPEND to old books.
+        //If the index is greater then 0 and this isn't topics, 
+        //replace new books with old books. Otherwise APPEND to old books.
         index > 0 || subject ? $("#books").append(item.el) : $("#books").html(item.el);
       });
 
@@ -182,8 +184,8 @@ define(function (require) {
       this.collection.each(this.book); 
     },
 
-    topic: function ( topic ) {
-      this.$el.prepend('<h1>'+topic+'</h1>').append('<a href="#browse/subject/'+topic+'">More &raquo;</a>')
+    topic: function ( topic, maxResults ) {
+      this.$el.prepend('<h1>'+topic+'</h1>').append('<a href="#browse/subject/'+topic+'/'+maxResults+'">More &raquo;</a>');
     },
 
     book: function(model) {

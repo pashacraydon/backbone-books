@@ -57,7 +57,7 @@ a:visited {
 }
 
 #books {
-	padding-top: 30px;
+	padding-top: 60px;
 }
 
 .wrap-btn {
@@ -92,9 +92,21 @@ a:visited {
 
 
 /* Search */
+#logo {
+	text-align: center;
+	padding: 15px 0 20px;
+}
+#logo a {
+	color: white;
+	text-decoration: none;
+	border-bottom: 2px solid rgba(255,255,255,0.5);
+}
+#logo a:hover {
+	border-bottom: 2px solid rgba(255,255,255,1);
+}
 header#search {
 	background: transparent url("../img/books.jpg") repeat scroll center center;
-	padding: 75px 0 50px;
+	padding: 25px 0 50px;
 	border-bottom: 1px solid #888;
 }
 
@@ -334,6 +346,7 @@ a.close-detail {
 }
 
 /* 3d css book covers
+/* http://srobbin.com/blog/3d-css-book-covers/
 ------------------------------------------------*/
 .book {
   display: inline-block;
@@ -375,8 +388,8 @@ a.close-detail {
   -webkit-transform: perspective(100) rotateY(-5deg) scale(1.1,1.1);
   -ms-transform: rotateY(-5deg) scale(1.1,1.1);
 }
-/* Safari 3d transform are buggy with z-index overlays */
-.safari.csstransforms3d .book.removeTransform {
+/* 3d transform are buggy with z-index overlays, remove them */
+.csstransforms3d .book.removeTransform {
   -webkit-transform: translate3d(0,0,0);
 }
 
