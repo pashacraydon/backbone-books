@@ -95,8 +95,9 @@ define(function (require) {
         var item = new AllBooksView({ collection: Books });
             item.render();
 
-        //If a topic, prepend with the topic title and append a 'more' link
-        if (subject) {
+        //If a topic and collection isn't empty, 
+        //prepend with the topic title and append a 'more' link
+        if (subject && Books.length > 0) {
           item.topic(subject, maxResults);
         }
 
@@ -219,7 +220,7 @@ define(function (require) {
       this.detail(this.model);
     },
 
-    //populate the cached template and append to this html
+    //populate the cached template and append to 'this' objects html
     render: function(){
       var book = _.template(this.template(this.model.toJSON()));
       this.$el.append(book);

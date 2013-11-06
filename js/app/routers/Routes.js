@@ -22,7 +22,6 @@ define(function (require) {
     },
     subject: function(term, index) {
       var search = new V.SearchView();
-      console.log(index);
       search.browse('subject:'+term, index, v.MAX_DEFAULT);
     },
     publisher: function(term) {
