@@ -13,8 +13,8 @@ define(function (require) {
         "title": "",
         "imageLinks": [
           {
-            "smallThumbnail": "",
-            "thumbnail": ""
+            "smallThumbnail": "http://placehold.it/128x195/ffffff/999999",
+            "thumbnail": "http://placehold.it/128x195/ffffff/999999"
             }
           ]
         }

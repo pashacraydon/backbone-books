@@ -5,6 +5,7 @@ define(function (require) {
       v = require('app/utils/variables'),
       C = require('app/collections/BookCollection'),
       M = require('app/models/BookModel'),
+      myCollection = require('app/collections/myLibrary'),
       bookTemplate = require('text!app/templates/book.html'),
       detailsTemplate = require('text!app/templates/details.html'),
       SearchView,
@@ -15,6 +16,8 @@ define(function (require) {
       AllBooksView;
 
   SearchView = Backbone.View.extend({
+    //Attach this view to this html element,
+    //similar to document.getElementById('#search_form')
     el: $("#search_form"), 
 
     //the DOM events specific to this view
@@ -28,10 +31,11 @@ define(function (require) {
       //unless its a router
       if (window.location.hash === '') {
         this.topics(v.TOPICS);
+        //this.myBooks();
       }
     }),
 
-    search: function( e ){
+    search: function(e){
       var $value = $('#search_input').val();
       e.preventDefault();  
       //Remove previous search results
@@ -53,6 +57,17 @@ define(function (require) {
       }); 
     },
 
+    myBooks: function() {
+      var self = this;
+      _.each(Object.keys(localStorage), function(key,value) {
+          if (key.substring(0,7) === 'myBooks') {
+            var localBook = localStorage.getItem(key);
+            self.queryApi(null,null,null,null,localBook);
+          }
+        //console.log(key.substring(key.indexOf('_')+1) + ' ' + value);
+      });
+    },
+
     doAjax: function (url, data) {
       return $.ajax({
         dataType: 'jsonp',
@@ -62,10 +77,10 @@ define(function (require) {
       });
     },
 
-    queryApi: function(term, index, maxResults, subject) {
+    queryApi: function(term, index, maxResults, subject, volumeID) {
       var aj,
-          url = 'https://www.googleapis.com/books/v1/volumes?',
-          data = 'q='+encodeURIComponent(term)+'&startIndex='+index+'&maxResults='+maxResults+'&key='+v.API_KEY+'&fields=totalItems,items(id,volumeInfo)';
+          url = 'https://www.googleapis.com/books/v1/volumes',
+          data = '?q='+encodeURIComponent(term)+'&startIndex='+index+'&maxResults='+maxResults+'&langRestrict=en&key='+v.API_KEY+'&fields=totalItems,items(id,volumeInfo)';
 
       aj = this.doAjax(url, data);
 
@@ -125,7 +140,7 @@ define(function (require) {
             var dropdown = [];
                _.each(data.items, function(item) { 
                 var ele = {},
-                  //Use the subtitles for the autocomplete, if they exist
+                  //Use the titles and subtitles for the autocomplete, if they exist
                   subtitle = typeof item.volumeInfo.subtitle !== "undefined" ? ': '+item.volumeInfo.subtitle : '';
                   //Create an array of object attributes autocomplete can parse
                   ele = item.volumeInfo.title.concat(subtitle); 
@@ -146,6 +161,7 @@ define(function (require) {
   });
 
   loadMoreView = Backbone.View.extend({
+
     el: $("#loading"),
 
     events: {
@@ -171,6 +187,7 @@ define(function (require) {
   });
 
   AllBooksView = Backbone.View.extend({
+
     //all books go inside an unordered list tag
     tagName: "ul",
 
@@ -186,9 +203,9 @@ define(function (require) {
       this.collection.each(this.book); 
     },
 
-    topic: function ( topic, maxResults ) {
+    topic: function (topic, maxResults) {
       //for frontpage topics, prepend a title and append a 'more' button
-      this.$el.prepend('<h1>'+topic+'</h1>').append('<a href="#browse/subject/'+topic+'/'+maxResults+'">More &raquo;</a>');
+      this.$el.prepend('<h1>'+topic+'</h1>').append('<a href="#browse/subject/'+topic+'/'+maxResults+'#top">More &raquo;</a>');
     },
 
     book: function(model) {
@@ -202,7 +219,7 @@ define(function (require) {
 
 
   BookView = Backbone.View.extend({
-    //each book goes in an html list tag
+    //each book is created inside an html list tag
     tagName: "li",
 
     //cache the template function for a single item
@@ -211,6 +228,11 @@ define(function (require) {
     //the DOM events specific to this view
     events: {
       "click": "clicked"
+    },
+
+    initialize: function() {
+      //bind 'this' object to render method
+      _.bindAll(this, "render");
     },
 
     //when a book is clicked, 
@@ -222,6 +244,7 @@ define(function (require) {
 
     //populate the cached template and append to 'this' objects html
     render: function(){
+      console.log(this.model.toJSON());
       var book = _.template(this.template(this.model.toJSON()));
       this.$el.append(book);
     },
@@ -242,8 +265,11 @@ define(function (require) {
     //DOM events for this view
     events: {
       "click .close-detail": "hide",
-      "click #overlay": "hide"
+      "click #overlay": "hide",
+      "click .save-book": "saveBook"
     },
+
+   // localStorage: new Store("backbone_books"),
 
     initialize: function() {
       /* Add a faded overlay */
@@ -278,7 +304,14 @@ define(function (require) {
 
       //jQuery promise object lets us know when ajax is done
       aj.done(function () {
-        var detail = new M.BookModel(aj.responseJSON),
+
+        //Store the API JSON from our ajax callback
+        var data = aj.responseJSON;
+
+        //Creates a localstorage boolean variable for the details template
+        data['localstorage'] = Modernizr.localstorage;
+
+        var detail = new M.BookModel(data),
           //Load the books model into the details template
           view = _.template(detailsTemplate, detail.toJSON());
 
@@ -290,6 +323,23 @@ define(function (require) {
           descToggle.render();
           descToggle.undelegate('click .more, clck .less','click'); //todo: get rid of zombie views better
       });
+    },
+
+    saveBook: function(e) {
+      e.preventDefault();
+      var title = this.model.attributes.volumeInfo.title;
+
+      //Store the book title and volume ID to localStorage,
+      //namespaced to 'myBooks_'
+      var myLibrary = localStorage.setItem('myBooks_'+ title, this.model.id);
+
+      /*
+      //Saves entire book to localStorage but has issues
+      var addBook = myCollection;
+      addBook.fetch();
+      var book = new M.BookModel({ volume: this.model });
+      addBook.add(book);
+      book.save(); */
     },
 
     hide: function(e) {

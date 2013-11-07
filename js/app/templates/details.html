@@ -13,6 +13,6 @@
         <%= (volumeInfo.authors ? '<br /><strong>Author: '+volumeInfo.authors+'</strong>' : '') %>
         <%= (volumeInfo.publisher ? '<br /><strong>Published by, '+volumeInfo.publisher+'</strong>' : '') %>
         <%= (volumeInfo.description ? '<div class="description"><div class="more-block">'+volumeInfo.description+'</div></div>' : '<p>No description found</p>') %>
-        <%= (accessInfo.webReaderLink ? '<a class="btn" target="_blank" href="'+accessInfo.webReaderLink+'">Preview on Google</a>' : '') %>
+        <%= (accessInfo.webReaderLink && localstorage ? '<a class="btn save-book" href="'+accessInfo.webReaderLink+'">+ Save book to homepage</a>' : '') %>
       </div><!-- //wrap-info -->
     </div>
