@@ -62,7 +62,7 @@ define(function (require) {
       _.each(Object.keys(localStorage), function(key,value) {
           if (key.substring(0,7) === 'myBooks') {
             var localBook = localStorage.getItem(key);
-            self.queryApi(null,null,null,null,localBook);
+           // self.queryApi(null,null,null,null,localBook);
           }
         //console.log(key.substring(key.indexOf('_')+1) + ' ' + value);
       });
@@ -77,10 +77,10 @@ define(function (require) {
       });
     },
 
-    queryApi: function(term, index, maxResults, subject, volumeID) {
+    queryApi: function(term, index, maxResults, subject) {
       var aj,
-          url = 'https://www.googleapis.com/books/v1/volumes',
-          data = '?q='+encodeURIComponent(term)+'&startIndex='+index+'&maxResults='+maxResults+'&langRestrict=en&key='+v.API_KEY+'&fields=totalItems,items(id,volumeInfo)';
+          url = 'https://www.googleapis.com/books/v1/volumes?',
+          data = 'q='+encodeURIComponent(term)+'&startIndex='+index+'&maxResults='+maxResults+'&key='+v.API_KEY+'&fields=totalItems,items(id,volumeInfo)';
 
       aj = this.doAjax(url, data);
 
@@ -244,7 +244,6 @@ define(function (require) {
 
     //populate the cached template and append to 'this' objects html
     render: function(){
-      console.log(this.model.toJSON());
       var book = _.template(this.template(this.model.toJSON()));
       this.$el.append(book);
     },
@@ -327,19 +326,16 @@ define(function (require) {
 
     saveBook: function(e) {
       e.preventDefault();
-      var title = this.model.attributes.volumeInfo.title;
+      //var title = this.model.attributes.volumeInfo.title;
 
       //Store the book title and volume ID to localStorage,
       //namespaced to 'myBooks_'
-      var myLibrary = localStorage.setItem('myBooks_'+ title, this.model.id);
+      //var myLibrary = localStorage.setItem('myBooks_'+ title, this.model.id);
 
-      /*
-      //Saves entire book to localStorage but has issues
+      var book = new M.BookModel({ volume: this.model, id: this.model.id });
       var addBook = myCollection;
       addBook.fetch();
-      var book = new M.BookModel({ volume: this.model });
-      addBook.add(book);
-      book.save(); */
+      addBook.create(book);
     },
 
     hide: function(e) {
