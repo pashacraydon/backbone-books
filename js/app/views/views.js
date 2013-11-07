@@ -355,20 +355,20 @@ define(function (require) {
 
       //Make it a 'save' button instead
       e.currentTarget.className = 'btn save-book';
-      e.currentTarget.innerText = '+ Save book to your library';
+      e.currentTarget.innerText = '+ Save book to my library';
     },
 
     saveBook: function(e) {
       e.preventDefault();
-
       var book = new M.BookModel({ volume: this.model, id: this.model.id });
+      console.log(this.model.toJSON());
       var addBook = myCollection;
       addBook.fetch();
       addBook.create(book);
 
       //Make it a 'remove' button instead
       e.currentTarget.className = 'btn remove-book';
-      e.currentTarget.innerText = '- Remove book from your library';
+      e.currentTarget.innerText = '- Remove book from my library';
     },
 
     hide: function(e) {
@@ -376,6 +376,7 @@ define(function (require) {
       this.$el.find('#detail-view-template').removeClass('down').addClass('up');
       this.$el.find('#overlay').fadeOut('slow');
       this.$el.next().find('li').find('.book').removeClass('removeTransform');
+      this.$el.undelegate(); // Todo: do better garbarge collection
     }
   });
 
