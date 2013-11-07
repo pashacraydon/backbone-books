@@ -265,7 +265,8 @@ define(function (require) {
     events: {
       "click .close-detail": "hide",
       "click #overlay": "hide",
-      "click .save-book": "saveBook"
+      "click .save-book": "saveBook",
+      "click .remove-book": "removeBook"
     },
 
    // localStorage: new Store("backbone_books"),
@@ -295,6 +296,7 @@ define(function (require) {
 
     render: function() {
       var aj,
+          self = this,
           url = 'https://www.googleapis.com/books/v1/volumes/'+this.model.id,
           data = 'fields=accessInfo,volumeInfo&key='+v.API_KEY,
           $details = $("#book-details");
@@ -307,8 +309,13 @@ define(function (require) {
         //Store the API JSON from our ajax callback
         var data = aj.responseJSON;
 
-        //Creates a localstorage boolean variable for the details template
+        //Sets a boolean whether localStorage is supported (used in the details template)
         data['localstorage'] = Modernizr.localstorage;
+
+        //Sets a boolean whether this book is in localStorage (used in the details template)
+        data['localbook'] = self.localBook();
+
+        console.log(data);
 
         var detail = new M.BookModel(data),
           //Load the books model into the details template
@@ -324,18 +331,44 @@ define(function (require) {
       });
     },
 
+    //Checks the localstorage keys to see if the book is there,
+    //returns boolean
+    localBook: function() {
+      var self = this,
+          exists;
+
+      _.each(Object.keys(localStorage), function(key,value) {
+        if (key === 'myBooks-'+self.model.id) {
+          exists = true;
+        }
+      });
+
+      if (exists) {
+        return true;
+      }
+    },
+
+    removeBook: function(e) {
+      e.preventDefault();
+      localStorage.removeItem('myBooks-'+this.model.id);
+      console.log(e);
+
+      //Make it a 'save' button instead
+      e.currentTarget.className = 'btn save-book';
+      e.currentTarget.innerText = '+ Save book to your library';
+    },
+
     saveBook: function(e) {
       e.preventDefault();
-      //var title = this.model.attributes.volumeInfo.title;
-
-      //Store the book title and volume ID to localStorage,
-      //namespaced to 'myBooks_'
-      //var myLibrary = localStorage.setItem('myBooks_'+ title, this.model.id);
 
       var book = new M.BookModel({ volume: this.model, id: this.model.id });
       var addBook = myCollection;
       addBook.fetch();
       addBook.create(book);
+
+      //Make it a 'remove' button instead
+      e.currentTarget.className = 'btn remove-book';
+      e.currentTarget.innerText = '- Remove book from your library';
     },
 
     hide: function(e) {
