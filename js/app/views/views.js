@@ -8,6 +8,7 @@ define(function (require) {
       myCollection = require('app/collections/myLibrary'),
       bookTemplate = require('text!app/templates/book.html'),
       detailsTemplate = require('text!app/templates/details.html'),
+      welcomeTemplate = require('text!app/templates/welcome.html'),
       SearchView,
       loadMoreView,
       BookView,
@@ -27,11 +28,10 @@ define(function (require) {
     },
 
     initialize: _.once(function() {
-      //On first page load, show some topics,
+      //On first page load, check for books in localStorage
       //unless its a router
       if (window.location.hash === '') {
-        this.topics(v.TOPICS);
-        //this.myBooks();
+        this.queryLocalStorage();
       }
     }),
 
@@ -51,21 +51,19 @@ define(function (require) {
     },
 
     topics: function(terms) {
-      var self = this;
+      var self = this,
+          welcomeMsg = _.template(welcomeTemplate);
+
+      //If localStorage is supported, 
+      //include a description about your books library
+      if (Modernizr.localstorage) {
+        $('#books').prepend(welcomeMsg);
+      }
+
+      //load topics, requires an api query for each topic
       _.each(terms, function(topic) { 
         self.queryApi('subject:'+topic.subject,index='0', maxResults='5', topic.subject);
       }); 
-    },
-
-    myBooks: function() {
-      var self = this;
-      _.each(Object.keys(localStorage), function(key,value) {
-          if (key.substring(0,7) === 'myBooks') {
-            var localBook = localStorage.getItem(key);
-           // self.queryApi(null,null,null,null,localBook);
-          }
-        //console.log(key.substring(key.indexOf('_')+1) + ' ' + value);
-      });
     },
 
     doAjax: function (url, data) {
@@ -126,6 +124,27 @@ define(function (require) {
         var more = new loadMoreView();
         more.render(term, index, maxResults);
       }
+    },
+
+    queryLocalStorage: function() {
+      var myBooks = myCollection,
+          self = this;
+
+      myBooks.fetch({
+        success:function() {
+          //If there are books in the localStorage collection
+          //then load and render them
+          if (myBooks.length > 0) {
+            var item = new AllBooksView({ collection: myBooks }),
+                title = '<h1>My Library</h1>';
+                item.render();
+                $("#books").html(item.el).prepend(title);
+          //Otherwise, load up some topics
+          } else {
+            self.topics(v.TOPICS);
+          }
+        }
+      });
     },
 
     searchAutocomplete: function( e ) {
@@ -244,7 +263,9 @@ define(function (require) {
 
     //populate the cached template and append to 'this' objects html
     render: function(){
-      var book = _.template(this.template(this.model.toJSON()));
+      var fromLocalStorage = this.model.toJSON().model,
+          fromApi = this.model.toJSON();
+      var book = fromLocalStorage ? _.template(this.template(fromLocalStorage)) : _.template(this.template(fromApi));
       this.$el.append(book);
     },
 
@@ -286,7 +307,55 @@ define(function (require) {
       this.model.attributes.volumeInfo.imageLinks = this.model.attributes.volumeInfo.imageLinks || {};
     },
 
-    doAjax: function ( url, data ) {
+    render: function() {
+      var localExists = this.localBook(),
+          self = this,
+          $details = $("#book-details");
+
+      //If book is in localStorage, get it there
+      if (localExists) {
+          var localBook = myCollection;
+
+          localBook.fetch({
+            success:function() {
+              var data = localBook.get(self.model.id);
+
+              data.toJSON()['localstorage'] = true;
+              data.toJSON()['localbook'] = true;
+
+              view = _.template(detailsTemplate, data.toJSON());
+
+              //Remove previous instances of this template
+              $details.find('#detail-view-template').remove();
+              $details.append(view).find('#detail-view-template').show().addClass('down');
+            }
+          });
+      //Otherwise, do an API query
+      } else {
+          data = this.queryApi(this.model);
+
+          data.done(function () {
+              book = data.responseJSON;
+
+              book['localstorage'] = Modernizr.localstorage;
+              book['localbook'] = localExists;
+
+              var detail = new M.BookModel(book);
+                  //Load the books model into the details template
+                  view = _.template(detailsTemplate, detail.toJSON());
+
+              //Remove previous instances of this template
+              $details.find('#detail-view-template').remove();
+              $details.append(view).find('#detail-view-template').show().addClass('down');
+          });
+      }
+
+      var descToggle = new DescriptionView({ el: "#wrap-info" });
+      descToggle.render();
+      descToggle.undelegate('click .more, clck .less','click'); //todo: get rid of zombie views better
+    },
+
+    doAjax: function (url, data) {
       return $.ajax({
         dataType: 'jsonp',
         data: data,
@@ -294,41 +363,16 @@ define(function (require) {
       });
     },
 
-    render: function() {
+    queryApi: function(model) {
       var aj,
-          self = this,
           url = 'https://www.googleapis.com/books/v1/volumes/'+this.model.id,
           data = 'fields=accessInfo,volumeInfo&key='+v.API_KEY,
-          $details = $("#book-details");
+          $details = $("#book-details"),
+          data;
 
       aj = this.doAjax(url, data);
 
-      //jQuery promise object lets us know when ajax is done
-      aj.done(function () {
-
-        //Store the API JSON from our ajax callback
-        var data = aj.responseJSON;
-
-        //Sets a boolean whether localStorage is supported (used in the details template)
-        data['localstorage'] = Modernizr.localstorage;
-
-        //Sets a boolean whether this book is in localStorage (used in the details template)
-        data['localbook'] = self.localBook();
-
-        console.log(data);
-
-        var detail = new M.BookModel(data),
-          //Load the books model into the details template
-          view = _.template(detailsTemplate, detail.toJSON());
-
-          //remove previous instances of this template
-          $details.find('#detail-view-template').remove();
-          $details.append(view).find('#detail-view-template').show().addClass('down');
-
-          var descToggle = new DescriptionView({ el: "#wrap-info" });
-          descToggle.render();
-          descToggle.undelegate('click .more, clck .less','click'); //todo: get rid of zombie views better
-      });
+      return aj;
     },
 
     //Checks the localstorage keys to see if the book is there,
@@ -350,8 +394,9 @@ define(function (require) {
 
     removeBook: function(e) {
       e.preventDefault();
+
+      //Remove the book from localStorage
       localStorage.removeItem('myBooks-'+this.model.id);
-      console.log(e);
 
       //Make it a 'save' button instead
       e.currentTarget.className = 'btn save-book';
@@ -359,14 +404,39 @@ define(function (require) {
     },
 
     saveBook: function(e) {
-      e.preventDefault();
-      var book = new M.BookModel({ volume: this.model, id: this.model.id });
-      console.log(this.model.toJSON());
-      var addBook = myCollection;
-      addBook.fetch();
-      addBook.create(book);
+      var self = this;
 
-      //Make it a 'remove' button instead
+      e.preventDefault();
+
+      //We need to query the API again because the details data
+      //is different then the initial 'search' API query
+      //which is stored in 'this.model'. Details API query has larger
+      //book images and longer descriptions.
+      data = this.queryApi(this.model);
+
+      data.done(function () {
+        book = data.responseJSON;
+
+        //Sets boolean values so template knows which button to show
+        book['localstorage'] = Modernizr.localstorage;
+        book['localbook'] = true;
+
+        var newBook = new M.BookModel(book);
+
+        //Unique model ID's are required for localStorage to work properly
+        newBook.set({ id: self.model.id });
+
+        var addBook = myCollection;
+
+        addBook.fetch({
+          success:function() {
+            addBook.create(newBook);
+            newBook.save();
+          }
+        });
+      });
+
+      //Now make it a 'remove' button instead
       e.currentTarget.className = 'btn remove-book';
       e.currentTarget.innerText = '- Remove book from my library';
     },
