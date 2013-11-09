@@ -32,6 +32,8 @@ define(function (require) {
       if (window.location.hash === '') {
         this.queryLocalStorage();
       }
+
+      helpers.topicsForm();
     }),
 
     search: function(e){
@@ -124,12 +126,11 @@ define(function (require) {
       }
     },
 
+    /*
     moreBooks: function (term, index, maxResults) {
       var $more = $('#more-books'),
         self = this,
         $btn = $more.find('.more-button');
-
-      console.log($('#books ul').length());
 
       $more.on('click', function (e) {
         e.preventDefault(); 
@@ -140,7 +141,7 @@ define(function (require) {
       });
 
       $btn.data("index", newIndex);
-    },
+    }, */
 
     queryLocalStorage: function() {
       var myBooks = myCollection,
@@ -235,7 +236,7 @@ define(function (require) {
     },
 
     render: function() {
-      //call 'this' views book method on each book in the collection
+      //call the book method on each book in this collection
       this.collection.each(this.book); 
     },
 
@@ -246,7 +247,7 @@ define(function (require) {
 
     book: function(model) {
       //Instantiate a book view and populate it with a model, 
-      //then render it and append it to this views html element (tagName, unordered list)
+      //then render it and append it to this views html element
       var bookItem = new BookView({ model: model });
       bookItem.render();
       this.$el.append(bookItem.el);

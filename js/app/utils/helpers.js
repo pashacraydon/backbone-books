@@ -30,8 +30,23 @@ define(function (require) {
     }
   };
 
+  topicsForm = function () {
+    var $topics = $('.topics input');
+
+    $topics.change(function() {
+      if($(this).is(":checked")) {
+        console.log(this);
+      }
+    });
+    /*
+    _.each($topics, function(topic) { 
+      console.log(topic);
+    }); */
+  };
+
 
   return {
-    shortSynopsis: shortSynopsis
+    shortSynopsis: shortSynopsis,
+    topicsForm: topicsForm
   };
 });
