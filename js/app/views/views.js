@@ -6,13 +6,12 @@ define(function (require) {
       C = require('app/collections/BookCollection'),
       M = require('app/models/BookModel'),
       myCollection = require('app/collections/myLibrary'),
+      helpers = require('app/utils/helpers'),
       bookTemplate = require('text!app/templates/book.html'),
       detailsTemplate = require('text!app/templates/details.html'),
       welcomeTemplate = require('text!app/templates/welcome.html'),
       SearchView,
-      loadMoreView,
       BookView,
-      DescriptionView,
       DetailView,
       AllBooksView;
 
@@ -55,12 +54,12 @@ define(function (require) {
           welcomeMsg = _.template(welcomeTemplate);
 
       //If localStorage is supported, 
-      //include a description about your books library
+      //include a description about 'my books' library
       if (Modernizr.localstorage) {
         $('#books').prepend(welcomeMsg);
       }
 
-      //load topics, requires an api query for each topic
+      //load topics, requires an API query for each topic
       _.each(terms, function(topic) { 
         self.queryApi('subject:'+topic.subject,index='0', maxResults='5', topic.subject);
       }); 
@@ -78,7 +77,7 @@ define(function (require) {
     queryApi: function(term, index, maxResults, subject) {
       var aj,
           url = 'https://www.googleapis.com/books/v1/volumes?',
-          data = 'q='+encodeURIComponent(term)+'&startIndex='+index+'&maxResults='+maxResults+'&key='+v.API_KEY+'&fields=totalItems,items(id,volumeInfo)';
+          data = 'q='+encodeURIComponent(term)+'&startIndex='+index+'&maxResults='+maxResults+'&key='+v.API_KEY+'&projection=full&fields=totalItems,items(id,volumeInfo)';
 
       aj = this.doAjax(url, data);
 
@@ -121,9 +120,26 @@ define(function (require) {
 
       //Instantiate view for loading more books, except if its topics (not a search or browse)
       if (!subject) {
-        var more = new loadMoreView();
-        more.render(term, index, maxResults);
+        this.moreBooks(term, index, maxResults);
       }
+    },
+
+    moreBooks: function (term, index, maxResults) {
+      var $more = $('#more-books'),
+        self = this,
+        $btn = $more.find('.more-button');
+
+      console.log($('#books ul').length());
+
+      $more.on('click', function (e) {
+        e.preventDefault(); 
+        var maxResults = maxResults || v.MAX_DEFAULT,
+          newIndex = parseInt(index) + parseInt(maxResults);
+          self.queryApi(term, newIndex, maxResults);
+          this.undelegate(); // Todo: do better garbarge collection
+      });
+
+      $btn.data("index", newIndex);
     },
 
     queryLocalStorage: function() {
@@ -179,6 +195,7 @@ define(function (require) {
     }
   });
 
+  /*
   loadMoreView = Backbone.View.extend({
 
     el: $("#loading"),
@@ -203,7 +220,7 @@ define(function (require) {
         loadMore.queryApi(term, index, v.MAX_DEFAULT);
         loadMore.undelegate('#loading','click'); // Todo: do better garbarge collection
       }
-  });
+  }); */
 
   AllBooksView = Backbone.View.extend({
 
@@ -224,7 +241,7 @@ define(function (require) {
 
     topic: function (topic, maxResults) {
       //for frontpage topics, prepend a title and append a 'more' button
-      this.$el.prepend('<h1>'+topic+'</h1>').append('<a href="#browse/subject/'+topic+'/'+maxResults+'#top">More &raquo;</a>');
+      this.$el.prepend('<h1>'+topic+'</h1>').append('<a href="#browse/subject/'+topic+'/'+maxResults+'">More &raquo;</a>');
     },
 
     book: function(model) {
@@ -263,9 +280,7 @@ define(function (require) {
 
     //populate the cached template and append to 'this' objects html
     render: function(){
-      var fromLocalStorage = this.model.toJSON().model,
-          fromApi = this.model.toJSON();
-      var book = fromLocalStorage ? _.template(this.template(fromLocalStorage)) : _.template(this.template(fromApi));
+      var book = _.template(this.template(this.model.toJSON()));
       this.$el.append(book);
     },
 
@@ -290,8 +305,6 @@ define(function (require) {
       "click .remove-book": "removeBook"
     },
 
-   // localStorage: new Store("backbone_books"),
-
     initialize: function() {
       /* Add a faded overlay */
       var overlay = '<div id="overlay" style="display: none;"></div>';
@@ -312,22 +325,26 @@ define(function (require) {
           self = this,
           $details = $("#book-details");
 
+      //Remove previous instances of this template
+      $details.find('#detail-view-template').remove();
+
       //If book is in localStorage, get it there
       if (localExists) {
           var localBook = myCollection;
 
           localBook.fetch({
             success:function() {
-              var data = localBook.get(self.model.id);
+              var data = localBook.get(self.model.id),
+                  book = data.toJSON();
 
-              data.toJSON()['localstorage'] = true;
-              data.toJSON()['localbook'] = true;
+              book['localstorage'] = true;
+              book['localbook'] = true;
 
-              view = _.template(detailsTemplate, data.toJSON());
+              view = _.template(detailsTemplate, book);
 
-              //Remove previous instances of this template
-              $details.find('#detail-view-template').remove();
               $details.append(view).find('#detail-view-template').show().addClass('down');
+
+              helpers.shortSynopsis();
             }
           });
       //Otherwise, do an API query
@@ -344,15 +361,11 @@ define(function (require) {
                   //Load the books model into the details template
                   view = _.template(detailsTemplate, detail.toJSON());
 
-              //Remove previous instances of this template
-              $details.find('#detail-view-template').remove();
               $details.append(view).find('#detail-view-template').show().addClass('down');
+
+              helpers.shortSynopsis();
           });
       }
-
-      var descToggle = new DescriptionView({ el: "#wrap-info" });
-      descToggle.render();
-      descToggle.undelegate('click .more, clck .less','click'); //todo: get rid of zombie views better
     },
 
     doAjax: function (url, data) {
@@ -367,7 +380,6 @@ define(function (require) {
       var aj,
           url = 'https://www.googleapis.com/books/v1/volumes/'+this.model.id,
           data = 'fields=accessInfo,volumeInfo&key='+v.API_KEY,
-          $details = $("#book-details"),
           data;
 
       aj = this.doAjax(url, data);
@@ -408,10 +420,6 @@ define(function (require) {
 
       e.preventDefault();
 
-      //We need to query the API again because the details data
-      //is different then the initial 'search' API query
-      //which is stored in 'this.model'. Details API query has larger
-      //book images and longer descriptions.
       data = this.queryApi(this.model);
 
       data.done(function () {
@@ -450,48 +458,11 @@ define(function (require) {
     }
   });
 
-  DescriptionView = Backbone.View.extend({
-
-    events: {
-      "click .more": "more",
-      "click .less": "less"
-    },
-
-    render: function() {
-      var adjustheight = 200,
-        moreText = "More »";
-
-      this.$el.find(".description").find(".more-block").css('height', adjustheight).css('overflow', 'hidden');
-      this.$el.find(".description").append('<div class="hide-description overflow"><a href="#" class="more"></a></div>');
-      this.$el.find("a.more").text(moreText);
-    },
-
-    more: function(e) {
-      e.preventDefault();
-      var lessText = "« Less";
-
-      this.$el.find(".description").find(".more-block").css('height', 'auto').css('overflow', 'visible');
-      this.$el.find(".hide-description").removeClass('overflow');
-      this.$el.find("a.more").text(lessText).addClass('less');
-    },
-
-    less: function(e) {
-      e.preventDefault();
-      var adjustheight = 200,
-        moreText = "More »";
-
-      this.$el.find(".description").find(".more-block").css('height', adjustheight).css('overflow', 'hidden');
-      this.$el.find(".hide-description").addClass('overflow');
-      this.$el.find("a.more").text(moreText).removeClass('less');
-    }
-  });
 
   // public API
   return {
     SearchView: SearchView,
-    loadMoreView: loadMoreView,
     BookView: BookView,
-    DescriptionView: DescriptionView,
     DetailView: DetailView,
     AllBooksView: AllBooksView
   };

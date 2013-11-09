@@ -1,18 +1,37 @@
 
+/*
+ * Miscellanious jQuery functionality that would clutter a view
+ */
 define(function (require) {
-  var data;
+    var _ = require('underscore'),
+      $ = require('jquery'),
+      v = require('app/utils/variables'),
+      Backbone = require('backbone');
 
-  data = {
-    //Please use you're own API key, thanks!
-    API_KEY: 'AIzaSyBhBph_ccmIlFn9YSrvhCE_8zrYxazyqJ8',
-    MAX_DEFAULT: 6,
-    TOPICS: [
-    	{ subject:"Arts" },
-    	{ subject:"Music" },
-    	{ subject:"Poetry" },
-    	{ subject:"Cooking" }
-    ]
+  //Check for long synopsis and make it shorter
+  shortSynopsis = function () {
+    var moreText = "More »",
+      hideDesc = '<div class="hide-description overflow"><a href="#" class="more">More »</a></div>',
+      $desc = $('.description'),
+      height = $('.more-block').height();
+
+    if (height > 200) {
+      $desc.append(hideDesc);
+      $('.more-block').addClass('shorten');
+
+      $('.more').on('click', function (e) {
+        e.preventDefault();
+        var buttonTxt = $('.more').text() == "More »" ? "« Less" : "More »";
+
+        $desc.find(".more-block").toggleClass('long');
+        $(".hide-description").toggleClass('overflow');
+        $('.more').text(buttonTxt).toggleClass('less');
+      });
+    }
   };
 
-  return helpers;
+
+  return {
+    shortSynopsis: shortSynopsis
+  };
 });
