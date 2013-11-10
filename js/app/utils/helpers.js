@@ -1,6 +1,6 @@
 
 /*
- * Miscellanious jQuery functionality that would clutter a view
+ * Miscellanious jQuery functionality
  */
 define(function (require) {
     var _ = require('underscore'),

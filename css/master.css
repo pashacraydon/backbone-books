@@ -78,7 +78,7 @@ a:hover {
 }
 
 #main {
-   max-width: 1200px;
+   max-width: 920px;
    width: 100%;
    margin: 0 auto;
 }
@@ -403,17 +403,20 @@ textarea:focus, input:focus{
 }
 
 a.close-detail {
-   font-size: 2em;
-   opacity: 0.6;
+   opacity: 0.35;
    position: absolute;
    right: 30px;
    top: 30px;
-   color: #333;
    text-decoration: none;
+   height: 24px;
+   width: 24px;
+   background: transparent url("../img/close.png") no-repeat scroll center center;
+   display: block;
+   text-indent: -99999px;
 }
 
 .close-detail:hover {
-	opacity: 1;
+	opacity: 0.5;
 	text-decoration: none;
 }
 
@@ -446,8 +449,31 @@ a.close-detail {
 .book img { vertical-align: middle; border: none; }
 
 #books ul li {
-	margin: 5px 15px 0;
+	margin: 5px 0 0;
 }
+
+/* Kinda hacky positioning of 3d transforms, 
+	allows transform shadow to appear *over* the next book */
+#books ul li:nth-child(1) {  z-index: 18; }
+#books ul li:nth-child(2) {  z-index: 17; }
+#books ul li:nth-child(3) {  z-index: 16; }
+#books ul li:nth-child(4) {  z-index: 15; }
+#books ul li:nth-child(5) {  z-index: 14; }
+#books ul li:nth-child(6) {  z-index: 13; }
+#books ul li:nth-child(7) {  z-index: 12; }
+#books ul li:nth-child(8) {  z-index: 11; }
+#books ul li:nth-child(9) {  z-index: 10; }
+#books ul li:nth-child(10) {  z-index: 9; }
+#books ul li:nth-child(11) {  z-index: 8; }
+#books ul li:nth-child(12) {  z-index: 7; }
+#books ul li:nth-child(13) {  z-index: 6; }
+#books ul li:nth-child(14) {  z-index: 5; }
+#books ul li:nth-child(15) {  z-index: 4; }
+#books ul li:nth-child(16) {  z-index: 3; }
+#books ul li:nth-child(17) {  z-index: 2; }
+#books ul li:nth-child(18) {  z-index: 1; }
+
+
 .csstransforms3d  #books ul li,
 .csstransforms3d .wrap-book {
   -moz-perspective: 100px;
@@ -477,8 +503,14 @@ a.close-detail {
   -webkit-transform: perspective(100) rotateY(-5deg) scale(1.1,1.1);
   -ms-transform: rotateY(-5deg) scale(1.1,1.1);
 }
+
 /* 3d transform are buggy with z-index overlays, remove them */
-.csstransforms3d .book.removeTransform {
+.csstransforms3d .book.removeTransform,
+.safari.csstransforms3d .book {
+  -webkit-transform: translate3d(0,0,0);
+}
+
+.safari.csstransforms3d li .book:hover  {
   -webkit-transform: translate3d(0,0,0);
 }
 
