@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <title>Booklet</title>
-    <link rel="stylesheet" href="css/booklet.css">
+    <link rel="stylesheet" href="css/master.css">
     <!-- Google Fonts -->
     <link href='http://fonts.googleapis.com/css?family=Josefin+Sans:400,700' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Josefin+Slab:400,700,400italic,700italic' rel='stylesheet' type='text/css'>
@@ -18,9 +18,14 @@
   <header id="search">
     <h1 id="logo"><a href="/">BackBone Books</a></h1>
     <form id="search_form" action="" method="POST">
-        <input autocomplete="off" autofocus="true" type="text" name="q" id="search_input" value="" placeholder="Search books" />
+        <input autocomplete="off" autofocus="true" type="text" name="q" id="search_input" value="" placeholder="" />
         <button id="search_button" class="btn btn-large btn-primary" type="submit">Go</button>
     </form>
+
+    <ul class="menu">
+      <li><a href="#mybooks">My library</a></li>
+      <li> <a href="https://github.com/pashasc/booklet">Fork this project on Github</a></li>
+    </ul>
   </header>
 
   <div id="wrapper">
@@ -105,17 +110,11 @@
 
 <footer>
   <div class="wrapper">
-  <div class="menu left">
-    <ul class="mylinks">
-      <li><a href="#mybooks">My library</a></li>
-      <li> <a href="https://github.com/pashasc/booklet">Fork this project on Github</a></li>
-    </ul>
     <ul class="copyright">
       <li><small>© Experimental Backbone.js project by <a href="https://github.com/pashasc" target="_blank">Pashasc</a></small></li>
       <li><small>3d CSS Book Covers are by the amazing <a href="http://srobbin.com/blog/3d-css-book-covers/">Scott Robin</a></small></li>
     </ul>
   </div>
-
 </footer>
 
 </body>

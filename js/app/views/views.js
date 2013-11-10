@@ -60,12 +60,10 @@ define(function (require) {
 
       //Randomize topics
       shuffle = _.shuffle(terms);
-      console.log(shuffle);
 
       //load topics, requires an API query for each topic
       _.each(shuffle, function(topic, count) { 
-        if (count <= 4) {
-          console.log(topic);
+        if (count <= 3) {
           self.queryApi('subject:'+topic,index='0', maxResults='5', topic);
         } else {
           return;
@@ -116,7 +114,7 @@ define(function (require) {
           //Some granular searches return empty books, no books, books without images etc.
           //If that happens, split off the 'subject:', or 'author:' part and
           //do another query
-          if (emptyBooks > 3 || data.totalItems < 25) {
+          if (emptyBooks > 3 || data.totalItems < 25 && !subject) {
             var s = term.split(':'),
                 newsearch = s[1];
             self.queryApi(newsearch,index,maxResults);
@@ -147,6 +145,8 @@ define(function (require) {
       }
     },
 
+    //'morebooks' event handler gets the query parameters
+    //from data attributes stored in the 'more books' button
     moreBooks: function (e) {
       var $btn = $('#more-books .more-button'),
         index = $btn.data("index"),
@@ -191,6 +191,7 @@ define(function (require) {
     searchAutocomplete: function( e ) {
       var $searchForm = $('#search_input'),
         term = $searchForm.val(),
+        self = this,
         url = 'https://www.googleapis.com/books/v1/volumes?q='+encodeURIComponent(term)+'&maxResults=8&key='+v.API_KEY+'&fields=totalItems,items(accessInfo,volumeInfo)';
 
       //Autcomplete function from jQuery UI (http://jqueryui.com/autocomplete/)
@@ -212,41 +213,16 @@ define(function (require) {
             }); 
           },
           select: function( event, ui ) {
-            //Instantiate a new search view and populate the autocomplete with an API query
-            var search = new SearchView();
-            search.queryApi(ui.item.value, index='0',v.MAX_DEFAULT);
+            //populate the autocomplete with an API query
+            self.queryApi(ui.item.value, index='0',v.MAX_DEFAULT);
+          },
+          //Trigger when the menu is hidden, remove search term
+          close: function( event, ui ) {
+            $searchForm.val('');
           }
       });
     }
   });
-
-  /*
-  moreBooksView = Backbone.View.extend({
-
-    el: $("#more-books"),
-
-    events: {
-      "click": "morebooks"
-    },
-
-    render: function(term, index, maxResults) {
-      this.$el.find('.wrap-btn').remove();
-      var maxResults = maxResults || v.MAX_DEFAULT,
-        countIndex = parseInt(index) + parseInt(maxResults),
-        morebtn = '<div class="wrap-btn" style="text-align: center;"><a data-index="'+countIndex+'" data-term="'+term+'" class="btn more-button" href="#"> <strong>&#43;</strong> More of these books</a></div>';
-        this.$el.append(morebtn);
-    }, 
-
-    morebooks: function(e) {
-      var term = $('.more-button').data('term'),
-        index = $('.more-button').data('index'),
-        loadMore = new SearchView();
-        e.preventDefault(); 
-        loadMore.queryApi(term, index, v.MAX_DEFAULT);
-        loadMore.undelegate('#loading','click'); // Todo: do better garbarge collection
-      }
-  }); */
-
 
   AllBooksView = Backbone.View.extend({
 
@@ -363,11 +339,12 @@ define(function (require) {
               var data = localBook.get(self.model.id),
                   book = data.toJSON();
 
+              //localStorage booleans let details template know 
+              //which button to show
               book['localstorage'] = true;
               book['localbook'] = true;
 
               view = _.template(detailsTemplate, book);
-
               $details.append(view).find('#detail-view-template').show().addClass('down');
 
               helpers.shortSynopsis();
@@ -438,7 +415,7 @@ define(function (require) {
 
       //Make it a 'save' button instead
       e.currentTarget.className = 'btn save-book';
-      e.currentTarget.innerText = '+ Save book to my library';
+      e.currentTarget.textContent = '+ Save book to my library';
     },
 
     saveBook: function(e) {
@@ -479,7 +456,7 @@ define(function (require) {
 
       //Now make it a 'remove' button instead
       e.currentTarget.className = 'btn remove-book';
-      e.currentTarget.innerText = '- Remove book from my library';
+      e.currentTarget.textContent = '- Remove book from my library';
     },
 
     hide: function(e) {

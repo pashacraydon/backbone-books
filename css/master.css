@@ -143,15 +143,40 @@ a:hover {
 #logo a {
 	color: white;
 	text-decoration: none;
-	border-bottom: 2px solid rgba(255,255,255,0.5);
+	font-size: 1.35em;
+	border-bottom: 3px solid rgba(255,255,255,0.5);
 }
 #logo a:hover {
-	border-bottom: 2px solid rgba(255,255,255,0.8);
+	border-bottom: 3px solid rgba(255,255,255,0.8);
 }
+
 header#search {
 	background: transparent url("../img/books.jpg") repeat scroll center center;
-	padding: 25px 0 50px;
+	padding: 100px 0 50px;
 	border-bottom: 1px solid #888;
+}
+
+header .menu {
+	text-align: center;
+	padding-top: 100px;
+}
+header .menu li {
+	display: inline-block;
+}
+
+header .menu a {
+	font-weight: bold;
+	font-size: 1.25em;
+	margin: 0 15px 0;
+	color: #CCC;
+	border-bottom: 1px dotted rgba(255,255,255,0.6);
+	font-family: 'Josefin Slab', serif;
+}
+
+header .menu a:hover {
+	text-decoration: none;
+	color: #fff;
+	border-bottom: 1px solid rgba(255,255,255,0.6);
 }
 
 textarea:focus, input:focus{
@@ -202,6 +227,7 @@ textarea:focus, input:focus{
 	margin: 0 auto 0;
 	text-align: center;
 	position: relative;
+	left: -50px;
 }
 
 .btn {
@@ -287,11 +313,11 @@ textarea:focus, input:focus{
 /* Autocomplete */
 .ui-autocomplete {
 	background: #fff none no-repeat scroll 0 0 !important;
-	-webkit-border-radius: 0px !important;
-	border-radius: 0px !important;
-	border: none !important;
+	-webkit-border-radius: 5px !important;
+	border-radius: 5px !important;
+	border: 1px solid #999 !important;
 	z-index: 999999 !important;
-	max-width: 800px;
+	max-width: 575px;
    -webkit-box-shadow: 3px 15px 15px rgba(0,0,0,0.2);
    box-shadow: 3px 15px 15px rgba(0,0,0,0.2);
 }
@@ -514,27 +540,6 @@ footer {
 	float: left;
 }
 
-footer .mylinks {
-	padding-bottom: 15px;
-}
-
-footer .mylinks li {
-	float: left;
-	color: #999;
-}
-
-footer .mylinks a {
-	margin-right: 30px;
-	font-weight: bold;
-	border-bottom: 3px solid #CCC;
-	font-size: larger;
-}
-
-footer .mylinks a:hover {
-	text-decoration: none;
-	border-bottom: 3px solid #AAA;
-}
-
 footer .wrapper {
 	max-width: 960px;
 }
@@ -542,9 +547,5 @@ footer .wrapper {
 footer div {
 	max-width: 45%;
 	margin: 0 auto;
-}
-
-footer .copyright {
-	margin-top: 30px;
 }
 
