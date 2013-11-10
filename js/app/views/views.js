@@ -13,7 +13,8 @@ define(function (require) {
       SearchView,
       BookView,
       DetailView,
-      AllBooksView;
+      AllBooksView,
+      TopicsView;
 
   SearchView = Backbone.View.extend({
     //Attach this view to this html element,
@@ -32,8 +33,6 @@ define(function (require) {
       if (window.location.hash === '') {
         this.queryLocalStorage();
       }
-
-      helpers.topicsForm();
     }),
 
     search: function(e){
@@ -49,6 +48,9 @@ define(function (require) {
       $('#books').html(''); 
       //Do a search with query passed in from a function
       this.queryApi(term, index, maxResults); 
+
+      //Results appear at the top of the page
+      $("html, body").animate({ scrollTop: 0 }, "slow");
     },
 
     topics: function(terms) {
@@ -63,7 +65,7 @@ define(function (require) {
 
       //load topics, requires an API query for each topic
       _.each(terms, function(topic) { 
-        self.queryApi('subject:'+topic.subject,index='0', maxResults='5', topic.subject);
+        self.queryApi('subject:'+topic,index='0', maxResults='5', topic);
       }); 
     },
 
@@ -122,7 +124,7 @@ define(function (require) {
 
       //Instantiate view for loading more books, except if its topics (not a search or browse)
       if (!subject) {
-        this.moreBooks(term, index, maxResults);
+        //this.moreBooks(term, index, maxResults);
       }
     },
 

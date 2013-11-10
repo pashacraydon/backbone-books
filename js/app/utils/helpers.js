@@ -30,6 +30,7 @@ define(function (require) {
     }
   };
 
+/*
   topicsForm = function () {
     var $topics = $('.topics input');
 
@@ -38,15 +39,13 @@ define(function (require) {
         console.log(this);
       }
     });
-    /*
     _.each($topics, function(topic) { 
       console.log(topic);
-    }); */
-  };
+    }); 
+  }; */
 
 
   return {
-    shortSynopsis: shortSynopsis,
-    topicsForm: topicsForm
+    shortSynopsis: shortSynopsis
   };
 });

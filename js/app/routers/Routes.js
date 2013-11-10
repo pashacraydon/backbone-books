@@ -10,8 +10,8 @@ define(function (require) {
       "": "index",
       "browse/:query": "browse", // #browse/php
       "browse/subject/:query/:index": "subject",
-      "browse/publisher/:query": "publisher",
-      "browse/author/:query": "author"
+      "browse/publisher/:query/:index": "publisher",
+      "browse/author/:query/:index": "author"
     },
     index: function() {
       var search = new V.SearchView();
@@ -24,13 +24,13 @@ define(function (require) {
       var search = new V.SearchView();
       search.browse('subject:'+term, index, v.MAX_DEFAULT);
     },
-    publisher: function(term) {
+    publisher: function(term, index) {
       var search = new V.SearchView();
-      search.browse('inpublisher:'+term);
+      search.browse('inpublisher:'+term, index, v.MAX_DEFAULT);
     },
-    author: function(term) {
+    author: function(term, index) {
       var search = new V.SearchView();
-      search.browse('inauthor:'+term);
+      search.browse('inauthor:'+term, index, v.MAX_DEFAULT);
     }
   });
 

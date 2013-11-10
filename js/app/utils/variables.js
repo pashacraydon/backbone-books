@@ -6,12 +6,7 @@ define(function (require) {
     //Please use you're own API key, thanks!
     API_KEY: 'AIzaSyBhBph_ccmIlFn9YSrvhCE_8zrYxazyqJ8',
     MAX_DEFAULT: 6,
-    TOPICS: [
-    	{ subject:"Arts" },
-    	{ subject:"Music" },
-    	{ subject:"Poetry" },
-    	{ subject:"Cooking" }
-    ]
+    TOPICS: [ "Arts", "Music", "Poetry", "Cooking" ]
   };
 
   return data;

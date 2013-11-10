@@ -1,9 +1,9 @@
-<fieldset>
-  <legend>What metasyntactic variables do you like?</legend>
+    <fieldset>
+      <legend>Topics</legend>
 
-  <input type="checkbox" name="foo" value="bar" id="foo_bar">
-  <label for="foo_bar">Bar</label>
+		<% _.each(topics, function(topic) { %>
+			<input type="checkbox" name="<%= topic %>" value="<%= topic %>" id="<%= topic %>">
+			<label for="<%= topic %>"><%= topic %></label>
+		<% }); %>
 
-  <input type="checkbox" name="foo" value="baz" id="foo_baz">
-  <label for="foo_baz">Baz</label>
-</fieldset>
+    </fieldset>

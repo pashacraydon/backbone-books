@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html>
+<html id="top">
 <head>
   <meta charset="utf-8">
   <title>Booklet</title>
@@ -12,7 +12,7 @@
 
     <script data-main="js/app" src="js/libs/require.min.js"></script>
   </head>
-  <body id="top">
+  <body>
  
  <header id="search">
     <h1 id="logo"><a href="/">BackBone Books</a></h1>
@@ -21,7 +21,7 @@
         <button id="search_button" class="btn btn-large btn-primary" type="submit">Go</button>
     </form>
  </header>
-  <div id="wrapper">
+<div id="wrapper">
 
   <div id="main">
       <div id="book-details"></div>
@@ -33,7 +33,62 @@
       </div>
   </div>
 
+  <div id="categories">
+    <ul>
+      <li>Subjects
+        <ul>
+          <li><a href="#browse/subject/art/10">Art</a></li>
+          <li><a href="#browse/subject/biography/10">Biography</a></li>
+          <li><a href="#browse/subject/childrens/10">Childrens</a></li>
+          <li><a href="#browse/subject/classics/10">Classics</a></li>
+          <li><a href="#browse/subject/comics/10">Comics</a></li>
+          <li><a href="#browse/subject/cookbooks/10">Cookbooks</a></li>
+        </ul>
+        <ul>
+          <li><a href="#browse/subject/crime/10">Crime</a></li>
+          <li><a href="#browse/subject/fantasy/10">Fantasy</a></li>
+          <li><a href="#browse/subject/history/10">History</a></li>
+          <li><a href="#browse/subject/poetry/10">Poetry</a></li>
+          <li><a href="#browse/subject/psychology/10">Psychology</a></li>
+          <li><a href="#browse/subject/religion/10">Religion</a></li>
+        </ul>
+        <ul>
+          <li><a href="#browse/subject/romance/10">Romance</a></li>
+          <li><a href="#browse/subject/science/10">Science</a></li>
+          <li><a href="#browse/subject/self-help/10">Self Help</a></li>
+          <li><a href="#browse/subject/suspense/10">Suspense</a></li>
+          <li><a href="#browse/subject/spirituality/10">Spirituality</a></li>
+          <li><a href="#browse/subject/travel/10">Travel</a></li>
+        </ul>
+      </li>
+    </ul>
+    <ul>
+      <li>Publishers
+        <ul>
+          <li><a href="#browse/publisher/pearson/10">Pearson</a></li>
+          <li><a href="#browse/publisher/thomsonreuters/10">ThomsonReuters</a></li>
+          <li><a href="#browse/publisher/wiley/10">Wiley</a></li>
+          <li><a href="#browse/publisher/random-house/10">Random House</a></li>
+          <li><a href="#browse/publisher/harper-collins/10">Harper Collins</a></li>
+          <li><a href="#browse/publisher/perseus/10">Perseus</a></li>
+        </ul>
+      </li>
+    </ul>
+    <ul>
+      <li>Authors
+        <ul>
+          <li><a href="#browse/author/hermann-hesse/10">Hermann Hesse</a></li>
+          <li><a href="#browse/author/kurt-vonnegut/10">Kurt Vonnegut</a></li>
+          <li><a href="#browse/subject/george-orwell/10">George Orwell</a></li>
+          <li><a href="#browse/author/george-rr-martin/10">Georgie R. R. Martin</a></li>
+          <li><a href="#browse/author/stephen-king/10">Stephen King</a></li>
+          <li><a href="#browse/author/aldous-huxley/10#top">Aldous Huxley</a></li>
+        </ul>
+      </li>
+    </ul>
   </div>
+
+</div>
 
 <footer>
   <div class="wrapper">
@@ -48,35 +103,9 @@
     </ul>
   </div>
 
-  <div class="topics right">
-    <fieldset>
-      <legend>Topics</legend>
+  <div class="right">
 
-      <input type="checkbox" checked name="art" value="art" id="art">
-      <label for="art">Art</label>
 
-      <input type="checkbox" checked name="cooking" value="cooking" id="cooking">
-      <label for="cooking">Cooking</label>
-
-      <input type="checkbox" name="music" value="music" id="music">
-      <label for="music">Music</label>
-
-      <input type="checkbox" name="poetry" value="poertry" id="poetry">
-      <label for="poetry">Poetry</label>
-
-      <input type="checkbox" name="entertainment" value="entertainment" id="entertainment">
-      <label for="entertainment">Entertainment</label>
-
-      <input type="checkbox" name="foo" value="baz" id="foo_baz">
-      <label for="foo_baz">Baz</label>
-
-      <input type="checkbox" name="foo" value="baz" id="foo_baz">
-      <label for="foo_baz">Baz</label>
-
-      <input type="checkbox" name="foo" value="baz" id="foo_baz">
-      <label for="foo_baz">Baz</label>
-
-    </fieldset>
   </div>
 </footer>
 </div>
