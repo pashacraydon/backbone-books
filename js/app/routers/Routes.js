@@ -18,7 +18,7 @@ define(function (require) {
     },
     browse: function(term) {
       var search = new V.SearchView();
-      search.browse(term);
+      search.browse(term, 0, v.MAX_DEFAULT);
     },
     subject: function(term, index) {
       var search = new V.SearchView();

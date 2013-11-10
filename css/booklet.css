@@ -18,6 +18,21 @@ h3 {
 	text-transform: uppercase;
 }
 
+ul {
+	margin: 0;
+	padding: 0;
+}
+
+ul li {
+	list-style-type: none;
+}
+ul ul li {
+	list-style-type: square;
+	color: #AAA;
+}
+ul ul li:hover {
+	color: #666;
+}
 ul, ul li {
 	margin: 0;
 }
@@ -32,13 +47,34 @@ ul, ul li {
 
 a:link,
 a:visited {
-	color: #005598;
+	color: rgb(25,102,38);
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
 }
 
 .placeholder {
 	width: 128px;
 	height: 195px;
 	background-color: #fff;
+}
+
+.clear {
+	clear:both;
+}
+
+#categories {
+	max-width: 820px;
+	margin: 50px auto 35px;
+	padding-top: 50px;
+	border-top: 2px solid #eee;
+}
+
+#categories div {
+	float: left;
+	margin: 0 45px 0 0;
 }
 
 #main {
@@ -466,11 +502,32 @@ a.close-detail {
 
 footer {
 	width: 100%;
-	background-color: #CCC;
-	border-top: 1px solid #888;
+	background-color: #eff0eb;
+	border-top: 2px solid rgb(25,102,38);
 	padding: 30px 0 30px;
 	margin-top: 50px;
 	float: left;
+}
+
+footer .mylinks {
+	padding-bottom: 15px;
+}
+
+footer .mylinks li {
+	float: left;
+	color: #999;
+}
+
+footer .mylinks a {
+	margin-right: 30px;
+	font-weight: bold;
+	border-bottom: 3px solid #CCC;
+	font-size: larger;
+}
+
+footer .mylinks a:hover {
+	text-decoration: none;
+	border-bottom: 3px solid #AAA;
 }
 
 footer .wrapper {

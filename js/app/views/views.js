@@ -80,6 +80,7 @@ define(function (require) {
 
     queryApi: function(term, index, maxResults, subject) {
       var aj,
+          self = this,
           url = 'https://www.googleapis.com/books/v1/volumes?',
           data = 'q='+encodeURIComponent(term)+'&startIndex='+index+'&maxResults='+maxResults+'&key='+v.API_KEY+'&projection=full&fields=totalItems,items(id,volumeInfo)';
 
@@ -88,7 +89,8 @@ define(function (require) {
       //jQuery promise object tells us when ajax is done
       aj.done(function () {
         var Books = new C.BookCollection(),
-          data = aj.responseJSON;
+          data = aj.responseJSON,
+          emptyBooks = 0;
 
         //Traverse the API response and put each JSON book into a model
         if (data) {
@@ -100,8 +102,19 @@ define(function (require) {
             if (item.volumeInfo.imageLinks.thumbnail) {
               var book = new M.BookModel(item);
               Books.add(book);
+            } else {
+              emptyBooks++;
             }
           }); 
+
+          //Some granular searches return empty books, no books, books without images etc.
+          //If that happens, split off the 'subject:', or 'author:' part and
+          //do another query
+          if (emptyBooks > 3 || data.totalItems < 25) {
+            var s = term.split(':'),
+                newsearch = s[1];
+            self.queryApi(newsearch,index,maxResults);
+          }
         }
 
         //Remove old ajax data
@@ -155,7 +168,7 @@ define(function (require) {
           //then load and render them
           if (myBooks.length > 0) {
             var item = new AllBooksView({ collection: myBooks }),
-                title = '<h1>My Library</h1>';
+                title = '<h1>My Books</h1>';
                 item.render();
                 $("#books").html(item.el).prepend(title);
           //Otherwise, load up some topics
