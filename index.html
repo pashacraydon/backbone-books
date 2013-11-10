@@ -14,24 +14,22 @@
   </head>
   <body>
  
- <header id="search">
+ <div id="wrap-books">
+  <header id="search">
     <h1 id="logo"><a href="/">BackBone Books</a></h1>
     <form id="search_form" action="" method="POST">
         <input autocomplete="off" autofocus="true" type="text" name="q" id="search_input" value="" placeholder="Search books" />
         <button id="search_button" class="btn btn-large btn-primary" type="submit">Go</button>
     </form>
- </header>
-<div id="wrapper">
+  </header>
 
-  <div id="main">
+  <div id="wrapper">
+    <div id="main">
       <div id="book-details"></div>
       <div id="books"></div>
-      <div id="more-books">
-        <div class="wrap-btn" style="text-align: center;">
-            <a class="btn more-button" href="#"> <strong>&#43;</strong> More of these books</a>
-        </div>
-      </div>
-  </div>
+      <div id="more-books"></div>
+    </div>
+</div>
 
   <div id="categories">
     <div>
@@ -81,7 +79,7 @@
           <li><a href="#browse/publisher/wiley/10">Wiley</a></li>
           <li><a href="#browse/publisher/random-house/10">Random House</a></li>
           <li><a href="#browse/publisher/harper-collins/10">Harper Collins</a></li>
-          <li><a href="#browse/publisher/perseus/10">Perseus</a></li>
+          <li><a href="#browse/publisher/oreilly/10">O'reilly</a></li>
         </ul>
       </li>
     </ul>
@@ -93,10 +91,10 @@
         <ul>
           <li><a href="#browse/author/hermann-hesse/10">Hermann Hesse</a></li>
           <li><a href="#browse/author/kurt-vonnegut/10">Kurt Vonnegut</a></li>
-          <li><a href="#browse/subject/george-orwell/10">George Orwell</a></li>
+          <li><a href="#browse/subject/dostoyevsky/10">Dostoyevsky</a></li>
           <li><a href="#browse/author/george-rr-martin/10">Georgie R. R. Martin</a></li>
           <li><a href="#browse/author/stephen-king/10">Stephen King</a></li>
-          <li><a href="#browse/author/aldous-huxley/10#top">Aldous Huxley</a></li>
+          <li><a href="#browse/author/aldous-huxley/10">Aldous Huxley</a></li>
         </ul>
       </li>
     </ul>
@@ -109,7 +107,7 @@
   <div class="wrapper">
   <div class="menu left">
     <ul class="mylinks">
-      <li><a href="/">My library</a></li>
+      <li><a href="#mybooks">My library</a></li>
       <li> <a href="https://github.com/pashasc/booklet">Fork this project on Github</a></li>
     </ul>
     <ul class="copyright">
@@ -118,12 +116,7 @@
     </ul>
   </div>
 
-  <div class="right">
-
-
-  </div>
 </footer>
-</div>
 
 </body>
 </html>

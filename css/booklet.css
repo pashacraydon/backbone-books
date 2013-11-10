@@ -221,6 +221,7 @@ textarea:focus, input:focus{
 	transition: 0.5s ease;
 	display: inline-block;
 	margin-top: 1em;
+	cursor: pointer;
 }
 
 
@@ -232,6 +233,10 @@ textarea:focus, input:focus{
 .btn:active {
 	background-color: #444;
 	color: #fff;
+}
+
+#more-books {
+	text-align: center;
 }
 
 .description {

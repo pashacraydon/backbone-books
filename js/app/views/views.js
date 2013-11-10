@@ -19,19 +19,20 @@ define(function (require) {
   SearchView = Backbone.View.extend({
     //Attach this view to this html element,
     //similar to document.getElementById('#search_form')
-    el: $("#search_form"), 
+    el: $("#wrap-books"), 
 
     //the DOM events specific to this view
     events: {
       "submit": "search", 
-      "keyup": "searchAutocomplete"
+      "keyup": "searchAutocomplete",
+      "click #more-books": "moreBooks"
     },
 
     initialize: _.once(function() {
-      //On first page load, check for books in localStorage
+      //On first page load, load some topics
       //unless its a router
       if (window.location.hash === '') {
-        this.queryLocalStorage();
+        this.topics(v.TOPICS);
       }
     }),
 
@@ -54,14 +55,7 @@ define(function (require) {
     },
 
     topics: function(terms) {
-      var self = this,
-          welcomeMsg = _.template(welcomeTemplate);
-
-      //If localStorage is supported, 
-      //include a description about 'my books' library
-      if (Modernizr.localstorage) {
-        $('#books').prepend(welcomeMsg);
-      }
+      var self = this;
 
       //load topics, requires an API query for each topic
       _.each(terms, function(topic) { 
@@ -82,7 +76,9 @@ define(function (require) {
       var aj,
           self = this,
           url = 'https://www.googleapis.com/books/v1/volumes?',
-          data = 'q='+encodeURIComponent(term)+'&startIndex='+index+'&maxResults='+maxResults+'&key='+v.API_KEY+'&projection=full&fields=totalItems,items(id,volumeInfo)';
+          data = 'q='+encodeURIComponent(term)+'&startIndex='+index+'&maxResults='+maxResults+'&key='+v.API_KEY+'&projection=full&fields=totalItems,items(id,volumeInfo)',
+          moreBtn = '<button data-index="'+index+'" data-term="'+term+'" data-maxresults="'+maxResults+'" class="btn more-button" href="#">&#43; More of these books</button>',
+          dupBtn = moreBtn.length;
 
       aj = this.doAjax(url, data);
 
@@ -94,6 +90,7 @@ define(function (require) {
 
         //Traverse the API response and put each JSON book into a model
         if (data) {
+          console.log(data);
           _.each(data.items, function(item) { 
             //Define JSON values, this prevents ajax errors
             item.volumeInfo = item.volumeInfo || {};
@@ -135,28 +132,23 @@ define(function (require) {
         index > 0 || subject ? $("#books").append(item.el) : $("#books").html(item.el);
       });
 
-      //Instantiate view for loading more books, except if its topics (not a search or browse)
-      if (!subject) {
-        //this.moreBooks(term, index, maxResults);
+      console.log(window.location);
+      //Append a 'more' button, except if its topics or 'mybooks'
+      if (!subject || window.location.hash != '#mybooks' || !dupBtn) {
+        $('#more-books').empty().append(moreBtn);
       }
     },
 
-    /*
-    moreBooks: function (term, index, maxResults) {
-      var $more = $('#more-books'),
-        self = this,
-        $btn = $more.find('.more-button');
+    moreBooks: function (e) {
+      var $btn = $('#more-books .more-button'),
+        index = $btn.data("index"),
+        term = $btn.data("term"),
+        maxresults = $btn.data("maxresults"),
+        newindex = index + maxresults;
 
-      $more.on('click', function (e) {
-        e.preventDefault(); 
-        var maxResults = maxResults || v.MAX_DEFAULT,
-          newIndex = parseInt(index) + parseInt(maxResults);
-          self.queryApi(term, newIndex, maxResults);
-          this.undelegate(); // Todo: do better garbarge collection
-      });
-
-      $btn.data("index", newIndex);
-    }, */
+      this.queryApi(term, newindex, maxresults);
+      this.undelegate();
+    }, 
 
     queryLocalStorage: function() {
       var myBooks = myCollection,
@@ -171,12 +163,19 @@ define(function (require) {
                 title = '<h1>My Books</h1>';
                 item.render();
                 $("#books").html(item.el).prepend(title);
-          //Otherwise, load up some topics
+          //Otherwise, load some topics with a message
           } else {
-            self.topics(v.TOPICS);
+          var welcomeMsg = _.template(welcomeTemplate);
+            if (Modernizr.localstorage) {
+              $('#books').prepend(welcomeMsg);
+              self.topics(v.TOPICS);
+            }
           }
         }
       });
+
+      //Results appear at the top of the page
+      $("html, body").animate({ scrollTop: 0 }, "slow");
     },
 
     searchAutocomplete: function( e ) {
@@ -212,9 +211,9 @@ define(function (require) {
   });
 
   /*
-  loadMoreView = Backbone.View.extend({
+  moreBooksView = Backbone.View.extend({
 
-    el: $("#loading"),
+    el: $("#more-books"),
 
     events: {
       "click": "morebooks"
@@ -237,6 +236,7 @@ define(function (require) {
         loadMore.undelegate('#loading','click'); // Todo: do better garbarge collection
       }
   }); */
+
 
   AllBooksView = Backbone.View.extend({
 
@@ -432,7 +432,8 @@ define(function (require) {
     },
 
     saveBook: function(e) {
-      var self = this;
+      var self = this,
+        welcomeMsg = $('.welcome').length;
 
       e.preventDefault();
 
@@ -458,6 +459,12 @@ define(function (require) {
             newBook.save();
           }
         });
+
+        //Refresh local books if were in the 'mybooks' page
+        //with welcome message present
+        if (window.location.hash === '#mybooks' && welcomeMsg) {
+          location.reload();
+        }
       });
 
       //Now make it a 'remove' button instead
@@ -466,11 +473,17 @@ define(function (require) {
     },
 
     hide: function(e) {
+      var localExists = this.localBook();
       e.preventDefault();
+
       this.$el.find('#detail-view-template').removeClass('down').addClass('up');
       this.$el.find('#overlay').fadeOut('slow');
       this.$el.next().find('li').find('.book').removeClass('removeTransform');
       this.$el.undelegate(); // Todo: do better garbarge collection
+      //Refresh local books if they've removed one
+      if (window.location.hash === '#mybooks' && !localExists) {
+        location.reload();
+      }
     }
   });
 

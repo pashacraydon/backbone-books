@@ -11,10 +11,15 @@ define(function (require) {
       "browse/:query": "browse", // #browse/php
       "browse/subject/:query/:index": "subject",
       "browse/publisher/:query/:index": "publisher",
-      "browse/author/:query/:index": "author"
+      "browse/author/:query/:index": "author",
+      "mybooks": "mybooks"
     },
     index: function() {
       var search = new V.SearchView();
+    },
+    mybooks: function() {
+      var search = new V.SearchView();
+      search.queryLocalStorage();
     },
     browse: function(term) {
       var search = new V.SearchView();
