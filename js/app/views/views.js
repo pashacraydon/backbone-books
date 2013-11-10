@@ -55,11 +55,21 @@ define(function (require) {
     },
 
     topics: function(terms) {
-      var self = this;
+      var self = this,
+        shuffle;
+
+      //Randomize topics
+      shuffle = _.shuffle(terms);
+      console.log(shuffle);
 
       //load topics, requires an API query for each topic
-      _.each(terms, function(topic) { 
-        self.queryApi('subject:'+topic,index='0', maxResults='5', topic);
+      _.each(shuffle, function(topic, count) { 
+        if (count <= 4) {
+          console.log(topic);
+          self.queryApi('subject:'+topic,index='0', maxResults='5', topic);
+        } else {
+          return;
+        }
       }); 
     },
 
@@ -90,7 +100,6 @@ define(function (require) {
 
         //Traverse the API response and put each JSON book into a model
         if (data) {
-          console.log(data);
           _.each(data.items, function(item) { 
             //Define JSON values, this prevents ajax errors
             item.volumeInfo = item.volumeInfo || {};
@@ -132,9 +141,8 @@ define(function (require) {
         index > 0 || subject ? $("#books").append(item.el) : $("#books").html(item.el);
       });
 
-      console.log(window.location);
       //Append a 'more' button, except if its topics or 'mybooks'
-      if (!subject || window.location.hash != '#mybooks' || !dupBtn) {
+      if (!subject || !dupBtn) {
         $('#more-books').empty().append(moreBtn);
       }
     },
@@ -159,12 +167,14 @@ define(function (require) {
           //If there are books in the localStorage collection
           //then load and render them
           if (myBooks.length > 0) {
+            $("#more-books").empty();
             var item = new AllBooksView({ collection: myBooks }),
                 title = '<h1>My Books</h1>';
                 item.render();
                 $("#books").html(item.el).prepend(title);
           //Otherwise, load some topics with a message
           } else {
+          $("#books").empty(); //Remove previous results, since this is ajax
           var welcomeMsg = _.template(welcomeTemplate);
             if (Modernizr.localstorage) {
               $('#books').prepend(welcomeMsg);
