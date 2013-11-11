@@ -9,6 +9,7 @@ define(function (require) {
       myCollection = require('app/collections/myLibrary'),
       bookTemplate = require('text!app/templates/book.html'),
       welcomeTemplate = require('text!app/templates/welcome.html'),
+      apiTemplate = require('text!app/templates/apimessage.html'),
       SearchView;
 
   require('browser');
@@ -97,6 +98,14 @@ define(function (require) {
 
         //Traverse the API response and put each JSON book into a model
         if (data) {
+
+          //If API quota runs out
+          data.error = data.error || {};
+          data.error.message = data.error.message || {};
+          if (data.error.message === 'Daily Limit Exceeded') {
+            _.once(self.deadApi(data.error.message));
+          }
+
           _.each(data.items, function(item) { 
             //Define JSON values, this prevents ajax errors
             item.volumeInfo = item.volumeInfo || {};
@@ -117,7 +126,7 @@ define(function (require) {
             var s = term.split(':'),
                 newsearch = s[1];
             self.queryApi(newsearch,index,maxResults);
-          }
+          } 
         }
 
         //Remove old ajax data
@@ -142,6 +151,11 @@ define(function (require) {
       if (!subject || !dupBtn) {
         $('#more-books').empty().append(moreBtn);
       }
+    },
+
+    deadApi: function(message) {
+      var apiMsg = _.template(apiTemplate);
+      $('#books').empty().append(apiMsg);
     },
 
     //'morebooks' event handler gets the query parameters
