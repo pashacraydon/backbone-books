@@ -88,6 +88,9 @@ define(function (require) {
           moreBtn = '<button data-index="'+index+'" data-term="'+term+'" data-maxresults="'+maxResults+'" class="btn more-button" href="#">&#43; More of these books</button>',
           dupBtn = moreBtn.length;
 
+      //Show loading indicator
+      $('#books').addClass('loading');
+
       aj = this.doAjax(url, data);
 
       //jQuery promise object tells us when ajax is done
@@ -100,6 +103,7 @@ define(function (require) {
         if (data) {
 
           //If API quota runs out
+          //give a message
           data.error = data.error || {};
           data.error.message = data.error.message || {};
           if (data.error.message === 'Daily Limit Exceeded') {
@@ -145,6 +149,9 @@ define(function (require) {
         //If the index is greater then 0 and this isn't topics, 
         //replace new books with old books. Otherwise APPEND to old books.
         index > 0 || subject ? $("#books").append(item.el) : $("#books").html(item.el);
+
+        //Remove loading indicator
+        $('#books').removeClass('loading');
       });
 
       //Append a 'more' button, except if its topics or 'mybooks'

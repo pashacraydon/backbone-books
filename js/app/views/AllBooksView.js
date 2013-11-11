@@ -14,7 +14,6 @@ define(function (require) {
       //bind 'this' object to book method
       _.bindAll(this, "book");
       //helper CSS class for determining when this view has loaded, removes Ajax spinner gif in the CSS
-      $('body').addClass('loaded');
     },
 
     render: function() {

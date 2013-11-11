@@ -152,13 +152,13 @@ a:hover {
 
 header#search {
 	background: transparent url("../img/books.jpg") repeat scroll center center;
-	padding: 100px 0 50px;
-	border-bottom: 1px solid #888;
+	padding: 50px 0 30px;
+	border-bottom: 2px solid rgb(25,102,38);
 }
 
 header .menu {
 	text-align: center;
-	padding-top: 100px;
+	padding-top: 50px;
 }
 header .menu li {
 	display: inline-block;
@@ -425,13 +425,8 @@ a.close-detail {
 	margin-bottom: 50px;
 }
 
-#books {
-	background: transparent url("../img/ajax-loader.gif") no-repeat scroll center center;
-	min-height: 200px;
-}
-
-.loaded #books {
-	background: transparent none no-repeat scroll 0 0;
+#books.loading {
+	background: transparent url("../img/ajax-loader.gif") no-repeat scroll center bottom;
 }
 
 .topics {
