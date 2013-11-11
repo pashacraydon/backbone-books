@@ -83,13 +83,14 @@ define(function (require) {
     queryApi: function(term, index, maxResults, subject) {
       var aj,
           self = this,
+          $books = $('#books'),
           url = 'https://www.googleapis.com/books/v1/volumes?',
           data = 'q='+encodeURIComponent(term)+'&startIndex='+index+'&maxResults='+maxResults+'&key='+v.API_KEY+'&projection=full&fields=totalItems,items(id,volumeInfo)',
           moreBtn = '<button data-index="'+index+'" data-term="'+term+'" data-maxresults="'+maxResults+'" class="btn more-button" href="#">&#43; More of these books</button>',
           dupBtn = moreBtn.length;
 
       //Show loading indicator
-      $('#books').addClass('loading');
+      $books.addClass('loading');
 
       aj = this.doAjax(url, data);
 
@@ -148,10 +149,10 @@ define(function (require) {
 
         //If the index is greater then 0 and this isn't topics, 
         //replace new books with old books. Otherwise APPEND to old books.
-        index > 0 || subject ? $("#books").append(item.el) : $("#books").html(item.el);
+        index > 0 || subject ? $books.append(item.el) : $books.html(item.el);
 
         //Remove loading indicator
-        $('#books').removeClass('loading');
+        $books.removeClass('loading');
       });
 
       //Append a 'more' button, except if its topics or 'mybooks'
