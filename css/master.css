@@ -318,6 +318,7 @@ textarea:focus, input:focus{
 	border: 1px solid #999 !important;
 	z-index: 999999 !important;
 	max-width: 575px;
+	width: 575px;
    -webkit-box-shadow: 3px 15px 15px rgba(0,0,0,0.2);
    box-shadow: 3px 15px 15px rgba(0,0,0,0.2);
 }

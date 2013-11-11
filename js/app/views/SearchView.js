@@ -40,6 +40,8 @@ define(function (require) {
       $('#books').html('');
       //Do a search with the form input as the query
       this.queryApi($value, index='0', v.MAX_DEFAULT);
+      //Reset any routes
+      window.location.hash = ''; 
     },
 
     browse: function(term, index, maxResults) {
