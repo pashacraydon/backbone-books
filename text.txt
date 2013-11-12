@@ -1,0 +1,66 @@
+As a UX developer at Safari Books, I often need to interact with all aspects of our front-end architecture. A big part of that is backbone.js. My experience is mostly in building jQuery plugins and scripts so I’ve needed to play catchup on this whole backbone thing. I learn best by pulling up my sleeves and diving into a project. I decided I’d like to work with some kind of API, Google has some nice ones — I decided on the Google Books API.
+
+The end result is backbone_books. You can jump to the demo here, http://backbonejsbooks.appspot.com/. Or check out the code on Github here, https://github.com/pashasc/backbone_books. 
+
+It’s not a whole lot useful - but its been a good primer for diving into localStorage, Backbone routers / models / views and collections. You can search or browse the Google Books API and book details let you save them to localStorage for a sort of “my books” collection that’s stored in your browser.
+
+Organization
+Require.js is another big part of our stack at Safari. Backbone has a model / view / controller (or router) structure so require is great for organizing these different layers. With require, you can organize your code into different modules and include them where you need them. The file structure for my project looks like this;
+
+index.html
+css
+img
+js
+     app
+	collections
+	models
+	routers
+	templates
+	utils
+	views
+	_init.js
+     libs
+	backbone
+	backbone.localstorage
+	require.min
+	require.text
+     app.js
+
+The only javascript file included in index.html is this,
+
+<script data-main="js/app" src="js/libs/require.min.js"></script>
+
+This lets require load js/app.js as the primary entry point. App.js sets the root directory for my modules and maps third party libraries to ‘namespaced’ module ID’s. These get loaded asynchronously in the order of their dependencies.
+
+In my app folder I’ve got all the main Backbone components organized nicely into their own folders. Lets take a look at the BookCollection in the collections folder. 
+
+define(function (require) {
+  var Backbone = require('backbone'),
+    M = require('app/models/BookModel'),
+    BookCollection;
+
+  BookCollection = Backbone.Collection.extend({
+           model: M.BookModel
+  });
+
+  return {
+    BookCollection: BookCollection
+  };
+});
+
+Here I define my BookCollection module. There are only two dependencies for this module; backbone and a BookModel - which fill up the collection. 
+
+It returns the name of itself so I can use it in another module. For example, I have a SearchView in the views folder which requires it.
+
+define(function (require) {
+    var _ = require('underscore'),
+      $ = require('jquery'),
+      Backbone = require('backbone'),
+      v = require('app/utils/variables'),
+      C = require('app/collections/BookCollection') …
+
+I assign it to a variable C. Later in the script I create a BookCollection like so,
+
+var book = new C.BookCollection()
+
+Backbone “classes” are constructors so 
