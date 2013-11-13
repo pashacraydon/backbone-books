@@ -1,11 +1,13 @@
-As a UX developer at Safari Books, I often need to interact with all aspects of our front-end architecture. A big part of that is backbone.js. My experience is mostly in building jQuery plugins and scripts so I’ve needed to play catchup on this whole backbone thing. I learn best by pulling up my sleeves and diving into a project. I decided I’d like to work with some kind of API, Google has some nice ones — I decided on the Google Books API.
+As a UX developer at Safari Books, I often need to interact with all aspects of our front-end architecture. A big part of that is backbone.js. My experience is mostly in building jQuery plugins and scripts so I’ve needed to play catchup on this whole backbone thing. I learn best by pulling up my sleeves and diving into a project. I decided I’d like to work with some kind of API and ended up choosing the Google Books API.
 
 The end result is backbone_books. You can jump to the demo here, http://backbonejsbooks.appspot.com/. Or check out the code on Github here, https://github.com/pashasc/backbone_books. 
 
-It’s not a whole lot useful - but its been a good primer for diving into localStorage, Backbone routers / models / views and collections. You can search or browse the Google Books API and book details let you save them to localStorage for a sort of “my books” collection that’s stored in your browser.
+I’m hesitant to run you through the code because frankly some of the code in the views is a bit bloated and they don’t establish a good 1 to 1 relationship between views and models. Backbone is best understood as a sort of ecosystem where your data are models and bind their “change” events to display views that re-render when they update. It’s also very flexible — so you can build silly apps that are a bit bloated and really, really, really like ajax.
+
+There are a few things I’d like to say about localStorage and the main Backbone components; routers, models, views and collections. But first a bit about organization.
 
 Organization
-Require.js is another big part of our stack at Safari. Backbone has a model / view / controller (or router) structure so require is great for organizing these different layers. With require, you can organize your code into different modules and include them where you need them. The file structure for my project looks like this;
+Require.js is another big part of our stack at Safari. Backbone has a model, view, controller (or router) structure and require.js is great for organizing these different components. With require.js, you can organize your code into different modules and include them on a need by need basis. The file structure for my project looks like this;
 
 index.html
 css
@@ -32,7 +34,7 @@ The only javascript file included in index.html is this,
 
 This lets require load js/app.js as the primary entry point. App.js sets the root directory for my modules and maps third party libraries to ‘namespaced’ module ID’s. These get loaded asynchronously in the order of their dependencies.
 
-In my app folder I’ve got all the main Backbone components organized nicely into their own folders. Lets take a look at the BookCollection in the collections folder. 
+In my app folder I’ve got all the main Backbone components organized nicely into their own folders. This is the BookCollection module which includes the only two components it requires, Backbone and a BookModel. It returns itself so I access it in a separate module.
 
 define(function (require) {
   var Backbone = require('backbone'),
@@ -48,19 +50,61 @@ define(function (require) {
   };
 });
 
-Here I define my BookCollection module. There are only two dependencies for this module; backbone and a BookModel - which fill up the collection. 
-
-It returns the name of itself so I can use it in another module. For example, I have a SearchView in the views folder which requires it.
+Elsewhere in a view I require the BookCollection and instantiate it.
 
 define(function (require) {
     var _ = require('underscore'),
       $ = require('jquery'),
       Backbone = require('backbone'),
-      v = require('app/utils/variables'),
+      M = require('app/models/BookModel'),
       C = require('app/collections/BookCollection') …
 
-I assign it to a variable C. Later in the script I create a BookCollection like so,
+…
 
-var book = new C.BookCollection()
+var Books = new C.BookCollection()
 
-Backbone “classes” are constructors so 
+Backbone “classes”, (views, models, routers, collections) are constructors and use the ‘new’ syntax with possible parameters to access them. 
+
+At this point ‘Books’ is a collection, a set of models which in this app are books. Backbone has a number of methods I can now use on this collection (http://backbonejs.org/#Collection). In this instance there is nothing in the collection so I’d like to populate it with models (http://backbonejs.org/#Collection-add). 
+
+So I need models to put inside my collection and I need them to have data. I do an ajax request to the Books API (https://developers.google.com/books/docs/v1/using#PerformingSearch) which returns a bunch of book data in JSON format which I loop through and put each iteration into a book model, then add it to the collection. 
+
+var book = new M.BookModel(bookdata);
+Books.add(book);    // add the book model to the collection
+
+Neat! 
+
+Now I have a book collection with a bunch book models that are the results from a search on the Google Books API.
+
+I need to display them though unless I just want to show the user a bunch of unformatted data. So I instantiate my “AllBooksView” and pass it the collection.
+
+var item = new Av.AllBooksView({ collection: Books });
+item.render();
+
+I also ask it to call it’s render method. 
+
+    render: function() {
+      //call the book method on each book in this collection
+      this.collection.each(this.book); 
+    },
+
+‘each’ is an underscore method which I abuse in this project because I like it that much. It loops through each model in the collection and calls the ‘book’ method in the AllBooksView on it.
+
+
+    book: function(model) {
+      //Instantiate a book view and populate it with a model, 
+      //then render it and append it to this views html element
+      var bookItem = new Bv.BookView({ model: model });
+      bookItem.render();
+      this.$el.append(bookItem.el);
+    }
+  });
+
+I pass each book model to it’s own view for rendering (BookView). This is because I want to bind a couple things to each book model that views are really good at doing. When you click on a book I want to show you it’s details — maybe a larger image, a description of the book, its authors and publishers etc.. By passing each book model into it’s own view I can bind it to a click event that can pass it’s unique-as-a-snowflake data into a DetailsView for final rendering. I can give it it’s own template for displaying it’s JSON formatted data in underscore template variables. It’s a bit like a game of telephone — I pass the model through a chain of events, at each stage capturing what I need to display it. In the BookView it’s simply displaying thumbnails inside ordered list tags “<li></li>” (which are appended to the “<ul></ul>”, opening and closing ordered list tags created in the “AllBooksView”).
+
+
+
+
+
+
+
