@@ -22,7 +22,5 @@ define(function (require) {
     }
   });
 
-  return {
-      BookModel: BookModel
-  };
+  return BookModel;
 });

@@ -1,7 +1,7 @@
 define(function (require) {
     var _ = require('underscore'),
       $ = require('jquery'),
-      Bv = require('app/views/BooksView'),
+      BookView = require('app/views/BookView'),
       Backbone = require('backbone'),
       AllBooksView;
 
@@ -13,7 +13,6 @@ define(function (require) {
     initialize: function() {
       //bind 'this' object to book method
       _.bindAll(this, "book");
-      //helper CSS class for determining when this view has loaded, removes Ajax spinner gif in the CSS
     },
 
     render: function() {
@@ -29,15 +28,11 @@ define(function (require) {
     book: function(model) {
       //Instantiate a book view and populate it with a model, 
       //then render it and append it to this views html element
-      var bookItem = new Bv.BookView({ model: model });
+      var bookItem = new BookView({ model: model });
       bookItem.render();
       this.$el.append(bookItem.el);
     }
   });
 
-  // public API
-  return {
-    AllBooksView: AllBooksView
-  };
-
+  return AllBooksView;
 });

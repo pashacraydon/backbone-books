@@ -3,9 +3,9 @@ define(function (require) {
       $ = require('jquery'),
       Backbone = require('backbone'),
       v = require('app/utils/variables'),
-      C = require('app/collections/BookCollection'),
-      M = require('app/models/BookModel'),
-      Av = require('app/views/AllBooksView'),
+      BookCollection = require('app/collections/BookCollection'),
+      BookModel = require('app/models/BookModel'),
+      allBooksView = require('app/views/AllBooksView'),
       myCollection = require('app/collections/myLibrary'),
       bookTemplate = require('text!app/templates/book.html'),
       welcomeTemplate = require('text!app/templates/welcome.html'),
@@ -96,7 +96,7 @@ define(function (require) {
 
       //jQuery promise object tells us when ajax is done
       aj.done(function () {
-        var Books = new C.BookCollection(),
+        var Books = new BookCollection,
           data = aj.responseJSON,
           emptyBooks = 0;
 
@@ -117,7 +117,7 @@ define(function (require) {
             item.volumeInfo.imageLinks = item.volumeInfo.imageLinks || {};
             item.volumeInfo.imageLinks.thumbnail = item.volumeInfo.imageLinks.thumbnail || '';
             if (item.volumeInfo.imageLinks.thumbnail) {
-              var book = new M.BookModel(item);
+              var book = new BookModel(item);
               Books.add(book);
             } else {
               emptyBooks++;
@@ -138,7 +138,7 @@ define(function (require) {
         delete aj;
 
         //Instantiate the AllBooksViews with a collection of books and render them
-        var item = new Av.AllBooksView({ collection: Books });
+        var item = new allBooksView({ collection: Books });
             item.render();
 
         //If a topic and collection isn't empty, 
@@ -180,7 +180,7 @@ define(function (require) {
     }, 
 
     queryLocalStorage: function() {
-      var myBooks = myCollection,
+      var myBooks = new myCollection,
           self = this;
 
       myBooks.fetch({
@@ -189,7 +189,7 @@ define(function (require) {
           //then load and render them
           if (myBooks.length > 0) {
             $("#more-books").empty();
-            var item = new Av.AllBooksView({ collection: myBooks }),
+            var item = new allBooksView({ collection: myBooks }),
                 title = '<h1>My Books</h1>';
                 item.render();
                 $("#books").html(item.el).prepend(title);
@@ -240,15 +240,12 @@ define(function (require) {
           //Trigger when the menu is hidden, remove search term
           close: function( event, ui ) {
             $searchForm.val('');
+            //Reset any routes
+            window.location.hash = ''; 
           }
       });
     }
   });
 
- 
-  // public API
-  return {
-    SearchView: SearchView
-  };
-
+  return SearchView;
 });

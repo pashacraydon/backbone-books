@@ -1,10 +1,10 @@
 
 define(function (require) {
   var Backbone = require('backbone'),
-    R = require('app/routers/routes');
+    Router = require('app/routers/routes');
 
   //Instiantiate the router
-  var app = new R.AppRouter();
+  var app = new Router();
   // Start Backbone history for bookmarkable URL's
   Backbone.history.start(); 
 });

@@ -2,8 +2,7 @@ define(function (require) {
     var _ = require('underscore'),
       $ = require('jquery'),
       Backbone = require('backbone'),
-      C = require('app/collections/BookCollection'),
-      M = require('app/models/BookModel'),
+      BookModel = require('app/models/BookModel'),
       v = require('app/utils/variables'),
       myCollection = require('app/collections/myLibrary'),
       helpers = require('app/utils/helpers'),
@@ -49,7 +48,7 @@ define(function (require) {
 
       //If book is in localStorage, get it there
       if (localExists) {
-          var localBook = myCollection;
+          var localBook = new myCollection;
 
           localBook.fetch({
             success:function() {
@@ -77,7 +76,7 @@ define(function (require) {
               book['localstorage'] = Modernizr.localstorage;
               book['localbook'] = localExists;
 
-              var detail = new M.BookModel(book);
+              var detail = new BookModel(book);
                   //Load the books model into the details template
                   view = _.template(detailsTemplate, detail.toJSON());
 
@@ -150,12 +149,12 @@ define(function (require) {
         book['localstorage'] = Modernizr.localstorage;
         book['localbook'] = true;
 
-        var newBook = new M.BookModel(book);
+        var newBook = new BookModel(book);
 
         //Unique model ID's are required for localStorage to work properly
         newBook.set({ id: self.model.id });
 
-        var addBook = myCollection;
+        var addBook = new myCollection;
 
         addBook.fetch({
           success:function() {
@@ -191,10 +190,5 @@ define(function (require) {
     }
   });
 
-
-  // public API
-  return {
-    DetailView: DetailView
-  };
-
+  return DetailView;
 });

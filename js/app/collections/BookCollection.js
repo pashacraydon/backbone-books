@@ -1,14 +1,12 @@
 
 define(function (require) {
   var Backbone = require('backbone'),
-    M = require('app/models/BookModel'),
+    BookModel = require('app/models/BookModel'),
     BookCollection;
 
   BookCollection = Backbone.Collection.extend({
-   	model: M.BookModel
+   	model: BookModel
   });
 
-  return {
-    BookCollection: BookCollection
-  };
+    return BookCollection;
 });

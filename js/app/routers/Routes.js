@@ -2,7 +2,7 @@
 define(function (require) {
   var Backbone = require('backbone'),
     v = require('app/utils/variables'),
-    Sv = require('app/views/SearchView'),
+    SearchView = require('app/views/SearchView'),
     AppRouter;
 
   AppRouter = Backbone.Router.extend({
@@ -15,31 +15,29 @@ define(function (require) {
       "mybooks": "mybooks"
     },
     index: function() {
-      var search = new Sv.SearchView();
+      var search = new SearchView();
     },
     mybooks: function() {
-      var search = new Sv.SearchView();
+      var search = new SearchView();
       search.queryLocalStorage();
     },
     browse: function(term) {
-      var search = new Sv.SearchView();
+      var search = new SearchView();
       search.browse(term, index='0', v.MAX_DEFAULT);
     },
     subject: function(term, index) {
-      var search = new Sv.SearchView();
+      var search = new SearchView();
       search.browse('subject:'+term, index, v.MAX_DEFAULT);
     },
     publisher: function(term, index) {
-      var search = new Sv.SearchView();
+      var search = new SearchView();
       search.browse('inpublisher:'+term, index, v.MAX_DEFAULT);
     },
     author: function(term, index) {
-      var search = new Sv.SearchView();
+      var search = new SearchView();
       search.browse('inauthor:'+term, index, v.MAX_DEFAULT);
     }
   });
 
-  return {
-      AppRouter: AppRouter
-  };
+  return AppRouter;
 });

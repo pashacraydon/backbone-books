@@ -2,7 +2,7 @@ define(function (require) {
     var _ = require('underscore'),
       $ = require('jquery'),
       Backbone = require('backbone'),
-      Dv = require('app/views/DetailView'),
+      DetailView = require('app/views/DetailView'),
       bookTemplate = require('text!app/templates/book.html'),
       BookView;
 
@@ -38,15 +38,11 @@ define(function (require) {
 
     detail: function(model) {
       //Instantiate the book details view with the book model that was clicked on
-      var bookDetail = new Dv.DetailView({ el: $("#book-details"), model: model });
+      var bookDetail = new DetailView({ el: $("#book-details"), model: model });
       bookDetail.render();
       bookDetail.undelegate('.close detail','click');  //todo: better garbage collection
     }
   });
 
-  // public API
-  return {
-    BookView: BookView
-  };
-
+  return BookView;
 });

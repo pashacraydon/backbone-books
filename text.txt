@@ -1,10 +1,35 @@
-As a UX developer at Safari Books, I often need to interact with all aspects of our front-end architecture. A big part of that is backbone.js. My experience is mostly in building jQuery plugins and scripts so I’ve needed to play catchup on this whole backbone thing. I learn best by pulling up my sleeves and diving into a project. I decided I’d like to work with some kind of API and ended up choosing the Google Books API.
+As a UX developer at Safari Books, I often need to interact with all aspects of our front-end architecture. A big part of that is backbone.js. My javascript experience is in building jQuery plugins and scripts so I’ve needed to play catchup on this backbone thing. I learn best by pulling up my sleeves and diving into a project. I decided I’d like to work with some kind of API and ended up choosing the Google Books API.
 
 The end result is backbone_books. You can jump to the demo here, http://backbonejsbooks.appspot.com/. Or check out the code on Github here, https://github.com/pashasc/backbone_books. 
 
-I’m hesitant to run you through the code because frankly some of the code in the views is a bit bloated and they don’t establish a good 1 to 1 relationship between views and models. Backbone is best understood as a sort of ecosystem where your data are models and bind their “change” events to display views that re-render when they update. It’s also very flexible — so you can build silly apps that are a bit bloated and really, really, really like ajax.
+It functions as such;
 
-There are a few things I’d like to say about localStorage and the main Backbone components; routers, models, views and collections. But first a bit about organization.
+1. The initial page load shows a search of 4 random topics. 
+2. At the bottom of the page there are some subjects you can browse. 
+3. The search returns results from the Books API you can load more infinitely. 
+4. Clicking a book shows a books detail with larger image, description, authors, publishers etc.
+5. Details also have a button where you can save the book to “your library”
+6. There is a special “my library” page where books you have saved show up.
+
+The Backbone functionality includes;
+
+1. A book model for storing book data returned in JSON format from the Google Books api
+2. A book collection for storing a collection of book models
+3. A “my library” collection hooked up to the backbone.localstorage adapter for storing book models in localstorage
+4. A router for mapping URL’s (the category links) to a search view for querying the Google Books api
+5. 4 views for displaying the data; an ‘all books view’, a book view, details view and a search view.  
+
+The whole process roughly occurs like this;
+
+1. The router kicks it off and maps the index page to the search view that listens to the search form and initializes 4 searches of random topics (from a pre-filled array)
+2. A search on the form does ajax on the Google Books API (https://developers.google.com/books/docs/v1/using#PerformingSearch) 
+3. The search view loops through the API response and puts each JSON book into a model, then adds it to a collection
+4. A collection of books is then passed to the ‘all books view’ which is a sort of wrapper for the ‘book view’. It loops through the collection and passes each book model to the book view. 
+5. The book view passes it’s model to an underscore template which renders the model data into html (book thumbnails). 
+6. The book view listens to click events on itself and passes it’s model to a details view.
+7. The detail view does one of two things; it checks if the book exists in localstorage. If it does, it fetches the data there. If it doesn’t - it performs a query on the Google Books API (https://developers.google.com/books/docs/v1/using#RetrievingVolume) 
+8. A rendered detail view gives you the option of saving it’s data to localstorage.
+9. Clicking any of the categories does basically all the same steps here they just pass slightly different parameters, (i.e. Google Books API here (https://developers.google.com/books/docs/v1/using#PerformingSearch) tells you to query for an author with “inauthor:” prepended to the search term)
 
 Organization
 Require.js is another big part of our stack at Safari. Backbone has a model, view, controller (or router) structure and require.js is great for organizing these different components. With require.js, you can organize your code into different modules and include them on a need by need basis. The file structure for my project looks like this;
@@ -72,9 +97,7 @@ So I need models to put inside my collection and I need them to have data. I do 
 var book = new M.BookModel(bookdata);
 Books.add(book);    // add the book model to the collection
 
-Neat! 
-
-Now I have a book collection with a bunch book models that are the results from a search on the Google Books API.
+Now I have a book collection with a bunch of book models that are the results from a search on the Google Books API.
 
 I need to display them though unless I just want to show the user a bunch of unformatted data. So I instantiate my “AllBooksView” and pass it the collection.
 
@@ -88,7 +111,7 @@ I also ask it to call it’s render method.
       this.collection.each(this.book); 
     },
 
-‘each’ is an underscore method which I abuse in this project because I like it that much. It loops through each model in the collection and calls the ‘book’ method in the AllBooksView on it.
+‘each’ is an underscore method (love underscore) which I abuse in this project. It loops through each model in the collection and calls the ‘book’ method in the AllBooksView on it.
 
 
     book: function(model) {
@@ -100,7 +123,105 @@ I also ask it to call it’s render method.
     }
   });
 
-I pass each book model to it’s own view for rendering (BookView). This is because I want to bind a couple things to each book model that views are really good at doing. When you click on a book I want to show you it’s details — maybe a larger image, a description of the book, its authors and publishers etc.. By passing each book model into it’s own view I can bind it to a click event that can pass it’s unique-as-a-snowflake data into a DetailsView for final rendering. I can give it it’s own template for displaying it’s JSON formatted data in underscore template variables. It’s a bit like a game of telephone — I pass the model through a chain of events, at each stage capturing what I need to display it. In the BookView it’s simply displaying thumbnails inside ordered list tags “<li></li>” (which are appended to the “<ul></ul>”, opening and closing ordered list tags created in the “AllBooksView”).
+I pass each book model to it’s own view for rendering (BookView). This is because I want to bind it to a click event that passes it’s specific model data to the details view. This way the details view can grab it’s volume ID from the model which I need to query the Google Books API for it’s full detail data (https://developers.google.com/books/docs/v1/using#RetrievingVolume).
+
+LocalStorage
+
+The details view loops through the localstorage keys looking for it’s volume id (namespaced to ‘myBooks’).
+
+    //Checks the localstorage keys to see if the book is there,
+    //returns boolean
+    localBook: function() {
+      var self = this,
+          exists;
+
+      _.each(Object.keys(localStorage), function(key,value) {
+        if (key === 'myBooks-'+self.model.id) {
+          exists = true;
+        }
+      });
+
+      if (exists) {
+        return true;
+      }
+    },
+
+If the book does indeed exist in localstorage, we fetch it from the localstorage collection and render it’s html with an underscore template. 
+
+  var localBook = myCollection;
+
+  localBook.fetch({
+     success:function() {
+      var data = localBook.get(self.model.id),
+          book = data.toJSON();
+
+      view = _.template(detailsTemplate, book);
+
+       }
+   });
+
+If it doesn’t, grab it from the API.
+
+  data = this.queryApi(this.model);
+
+  data.done(function () {
+     book = data.responseJSON;
+
+     var detail = new M.BookModel(book);
+     //Load the books model into the details template
+     view = _.template(detailsTemplate, detail.toJSON());
+
+   });
+
+The api query method,
+
+    queryApi: function(model) {
+      var aj,
+          url = 'https://www.googleapis.com/books/v1/volumes/'+this.model.id,
+          data = 'fields=accessInfo,volumeInfo&key='+v.API_KEY,
+          data;
+
+      aj = this.doAjax(url, data);
+
+      return aj;
+    },
+
+The do ajax method,
+
+    doAjax: function (url, data) {
+      return $.ajax({
+        dataType: 'jsonp',
+        data: data,
+        url: url
+      });
+    },
+
+The details underscore template,
+
+    <div id="detail-view-template" class="fade" style="display: none;">
+     <a class="close-detail" href="#">&#8855;</a>
+     <div class="wrap-book">
+       <div class="book">
+          <img src="<%= (volumeInfo.imageLinks.small ? volumeInfo.imageLinks.small : volumeInfo.imageLinks.thumbnail) %>" />
+        </div>
+     </div><!-- //wrap-book -->
+ 
+    <div id="wrap-info">
+        <%= (volumeInfo.title ? '<h1>'+volumeInfo.title+'</h1>' : '') %>
+        <%= (volumeInfo.subtitle ? '<h3>'+volumeInfo.subtitle+'</h3>' : '') %>
+        <%= (volumeInfo.authors ? '<br /><strong>Author: '+volumeInfo.authors+'</strong>' : '') %>
+        <%= (volumeInfo.publisher ? '<br /><strong>Published by, '+volumeInfo.publisher+'</strong>' : '') %>
+        <%= (volumeInfo.description ? '<div class="description"><div class="more-block">'+volumeInfo.description+'</div></div>' : '<p>No description found</p>') %>
+        <%= (localstorage && !localbook ? '<a class="btn save-book" href="#">+ Save book to my library</a>' : '') %>
+        <%= (localstorage && localbook ? '<a class="btn remove-book" href="#">- Remove book from my library</a>' : '') %>
+      </div><!-- //wrap-info -->
+    </div>
+
+
+
+It’s not the prettiest code. Theres some extra code I haven’t included here because some of it is silly show / hide animations. Other stuff is for defining JSON objects to prevent errors or silly things like checking the window.location.hash for a router URL. Debugging I check console.log() a lot and these things arise out of that.
+
+So, in closing. Backbone is great fun. I encourage you to 
 
 
 
