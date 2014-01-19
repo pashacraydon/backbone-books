@@ -8,7 +8,7 @@ This is an experimental backbone.js project I built to help myself learn the lan
 
 Demo: http://backbonejsbooks.appspot.com/
 
-![ScreenShot](https://raw.github.com/pashasc/backbone_books/screenshot/bbss.jpg)
+![ScreenShot](https://raw.github.com/pashasc/backbone_books/screenshot/screen.jpg)
 
 Dev
 ===
