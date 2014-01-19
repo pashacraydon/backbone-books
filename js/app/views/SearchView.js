@@ -76,7 +76,6 @@ define(function (require) {
       return $.ajax({
         dataType: 'jsonp',
         data: data,
-        cache: false,
         url: url
       });
     },
