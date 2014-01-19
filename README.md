@@ -9,3 +9,16 @@ This is an experimental backbone.js project I built to help myself learn the lan
 Demo: http://backbonejsbooks.appspot.com/
 
 ![ScreenShot](https://raw.github.com/pashasc/backbone_books/screenshot/bbss.jpg)
+
+Dev
+===
+
+Install grunt
+
+* npm install -g grunt-cli
+* npm install
+* grunt
+
+Compile code
+* npm install -g requirejs
+* r.js -o app.build.js

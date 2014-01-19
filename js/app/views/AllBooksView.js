@@ -5,6 +5,8 @@ define(function (require) {
       Backbone = require('backbone'),
       AllBooksView;
 
+  require('modernizr');
+  
   AllBooksView = Backbone.View.extend({
 
     //all books go inside an unordered list tag

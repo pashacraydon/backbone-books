@@ -13,6 +13,7 @@ define(function (require) {
       SearchView;
 
   require('browser');
+  require('modernizr');
 
   SearchView = Backbone.View.extend({
     //Attach this view to this html element,
@@ -96,7 +97,7 @@ define(function (require) {
 
       //jQuery promise object tells us when ajax is done
       aj.done(function () {
-        var Books = new BookCollection,
+        var Books = new BookCollection(),
           data = aj.responseJSON,
           emptyBooks = 0;
 
@@ -135,7 +136,7 @@ define(function (require) {
         }
 
         //Remove old ajax data
-        delete aj;
+        aj = '';
 
         //Instantiate the AllBooksViews with a collection of books and render them
         var item = new allBooksView({ collection: Books });
@@ -149,7 +150,12 @@ define(function (require) {
 
         //If the index is greater then 0 and this isn't topics, 
         //replace new books with old books. Otherwise APPEND to old books.
-        index > 0 || subject ? $books.append(item.el) : $books.html(item.el);
+        if (index > 0 || subject) {
+          $books.append(item.el);
+        } 
+        else {
+          $books.html(item.el);
+        }
 
         //Remove loading indicator
         $books.removeClass('loading');
@@ -180,7 +186,7 @@ define(function (require) {
     }, 
 
     queryLocalStorage: function() {
-      var myBooks = new myCollection,
+      var myBooks = new myCollection(),
           self = this;
 
       myBooks.fetch({

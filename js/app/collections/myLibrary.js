@@ -6,8 +6,8 @@ define(function (require) {
     myLibrary;
 
   myLibrary = Backbone.Collection.extend({
-  	model: BookModel,
-  	localStorage: new Backbone.LocalStorage("myBooks")
+    model: BookModel,
+    localStorage: new Backbone.LocalStorage("myBooks")
   });
 
   return myLibrary;

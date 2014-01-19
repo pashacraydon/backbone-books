@@ -6,6 +6,8 @@ define(function (require) {
       bookTemplate = require('text!app/templates/book.html'),
       BookView;
 
+  require('modernizr');
+  
   BookView = Backbone.View.extend({
     //each book is created inside an html list tag
     tagName: "li",

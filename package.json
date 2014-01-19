@@ -1,0 +1,14 @@
+{
+  "name": "backbone_books",
+  "version": "0.1.0",
+  "author": "Pasha Craydon",
+  "description": "Backbone.js app with the Google Books API",
+  "repository": {
+  	"type": "git",
+  	"url": "https://github.com/pashasc/backbone_books"
+  	},
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-jshint": "~0.6.3"
+  }
+}

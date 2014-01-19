@@ -5,7 +5,7 @@ define(function (require) {
     BookCollection;
 
   BookCollection = Backbone.Collection.extend({
-   	model: BookModel
+    model: BookModel
   });
 
     return BookCollection;

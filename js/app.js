@@ -3,17 +3,17 @@
  * Configure loading modules from the lib directory or CDN.
 */
 requirejs.config({
-  baseUrl: "/js/",
+  baseUrl: "js/",
   paths: {
-    "underscore": "//cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min",
-    backbone: "libs/backbone",
-    "jquery": "//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.1/jquery.min",
-    "jqueryui": "//ajax.googleapis.com/ajax/libs/jqueryui/1.8.2/jquery-ui.min",
-    css_browser_selector: "libs/css_browser_selector",
-    "modernizr": "//cdnjs.cloudflare.com/ajax/libs/modernizr/2.6.2/modernizr.min",
-    text: "libs/require.text",
-    localstorage: "libs/backbone.localstorage",
-    "browser": "libs/css_browser_selector"
+    "underscore":             "libs/underscore.min",
+    backbone:                 "libs/backbone",
+    "jquery":                 "libs/jquery-1.10.2.min",
+    "jqueryui":               "libs/jquery-ui-1.10.4.custom.min",
+    css_browser_selector:     "libs/css_browser_selector",
+    "modernizr":              "libs/modernizr.custom",
+    text:                     "libs/require.text",
+    localstorage:             "libs/backbone.localstorage",
+    "browser":                "libs/css_browser_selector"
   },
   shim: {
     underscore: {

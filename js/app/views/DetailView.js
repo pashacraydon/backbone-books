@@ -9,7 +9,8 @@ define(function (require) {
       detailsTemplate = require('text!app/templates/details.html'),
       DetailView;
 
-
+  require('modernizr');
+  
   DetailView = Backbone.View.extend({
 
     //attach this view to the following html id
@@ -48,7 +49,7 @@ define(function (require) {
 
       //If book is in localStorage, get it there
       if (localExists) {
-          var localBook = new myCollection;
+          var localBook = new myCollection();
 
           localBook.fetch({
             success:function() {
@@ -57,8 +58,8 @@ define(function (require) {
 
               //localStorage booleans let details template know 
               //which button to show
-              book['localstorage'] = true;
-              book['localbook'] = true;
+              book.localstorage = true;
+              book.localbook = true;
 
               view = _.template(detailsTemplate, book);
               $details.append(view).find('#detail-view-template').show().addClass('down');
@@ -73,8 +74,8 @@ define(function (require) {
           data.done(function () {
               book = data.responseJSON;
 
-              book['localstorage'] = Modernizr.localstorage;
-              book['localbook'] = localExists;
+              book.localstorage = Modernizr.localstorage;
+              book.localbook = localExists;
 
               var detail = new BookModel(book);
                   //Load the books model into the details template
@@ -98,8 +99,7 @@ define(function (require) {
     queryApi: function(model) {
       var aj,
           url = 'https://www.googleapis.com/books/v1/volumes/'+this.model.id,
-          data = 'fields=accessInfo,volumeInfo&key='+v.API_KEY,
-          data;
+          data = 'fields=accessInfo,volumeInfo&key='+v.API_KEY;
 
       aj = this.doAjax(url, data);
 
@@ -146,15 +146,15 @@ define(function (require) {
         book = data.responseJSON;
 
         //Sets boolean values so template knows which button to show
-        book['localstorage'] = Modernizr.localstorage;
-        book['localbook'] = true;
+        book.localstorage = Modernizr.localstorage;
+        book.localbook = true;
 
         var newBook = new BookModel(book);
 
         //Unique model ID's are required for localStorage to work properly
         newBook.set({ id: self.model.id });
 
-        var addBook = new myCollection;
+        var addBook = new myCollection();
 
         addBook.fetch({
           success:function() {
