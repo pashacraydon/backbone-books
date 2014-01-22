@@ -2,7 +2,7 @@
 ({
     appDir: "../",
     baseUrl: "js",
-    dir: "../../backbone_books_build",
+    dir: "../../backbone_books_compressed",
     paths: {
         "underscore":             "libs/underscore.min",
         backbone:                 "libs/backbone",
