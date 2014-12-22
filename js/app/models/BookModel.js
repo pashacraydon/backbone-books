@@ -3,6 +3,9 @@ define(function (require) {
     var Backbone = require('backbone'),
       BookModel;
 
+  /** A representation of a book
+  * @class, @augments Backbone.Model
+  * */
   BookModel = Backbone.Model.extend({
     defaults: {
       //Default JSON fields,
@@ -19,7 +22,35 @@ define(function (require) {
           ]
         }
       ]
+    },
+
+    initialize: function () {
+      this.on({
+        'invalid': this.onInvalid,
+        'remove': this.onRemove,
+        'change': this.onChange
+      }, this);
+    },
+
+    validate: function (attrs) {
+    },
+
+    isValid: function () {
+      return !this.validate(this.attributes);
+    },
+
+    onChange: function () {
+
+    },
+
+    /* the model failed validation */
+    onInvalid: function (model, error) {
+    },
+
+    onRemove: function (model) {
+      model.destroy();
     }
+
   });
 
   return BookModel;
