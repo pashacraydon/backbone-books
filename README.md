@@ -13,7 +13,7 @@ Demo: http://backbonejsbooks.appspot.com/
 
 ### Setup
 
-	$ cd penguin // cd to index.html in the penguin folder
+	$ cd backbone_books // cd to index.html in the backbone_books folder
 	$ python -m SimpleHTTPServer [port] // run python SimpleHTTPServer
 
 Visit the site in a browser, http://localhost.com:[port]
