@@ -52,7 +52,7 @@ define(function (require) {
           var localBook = new myCollection();
 
           localBook.fetch({
-            success:function() {
+            success: function() {
               var data = localBook.get(self.model.id),
                   book = data.toJSON();
 
@@ -121,6 +121,8 @@ define(function (require) {
       if (exists) {
         return true;
       }
+
+      return false;
     },
 
     removeBook: function(e) {

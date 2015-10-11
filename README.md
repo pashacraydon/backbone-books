@@ -11,6 +11,13 @@ Demo: http://backbonejsbooks.appspot.com/
 
 # Dev
 
+### Setup
+
+	$ cd penguin // cd to index.html in the penguin folder
+	$ python -m SimpleHTTPServer [port] // run python SimpleHTTPServer
+
+Visit the site in a browser, http://localhost.com:[port]
+
 ### Install grunt
 
     $ npm install -g grunt-cli

@@ -16,11 +16,9 @@ define(function (require) {
   require('modernizr');
 
   SearchView = Backbone.View.extend({
-    //Attach this view to this html element,
-    //similar to document.getElementById('#search_form')
-    el: $("#wrap-books"), 
 
-    //the DOM events specific to this view
+    el: "#wrap-books", 
+
     events: {
       "submit": "search", 
       "keyup": "searchAutocomplete",
@@ -41,7 +39,7 @@ define(function (require) {
       //Remove previous search results
       $('#books').html('');
       //Do a search with the form input as the query
-      this.queryApi($value, index='0', v.MAX_DEFAULT);
+      this.buildResults($value, index='0', v.MAX_DEFAULT);
       //Reset any routes
       window.location.hash = ''; 
     },
@@ -49,7 +47,7 @@ define(function (require) {
     browse: function(term, index, maxResults) {
       $('#books').html(''); 
       //Do a search with query passed in from a function
-      this.queryApi(term, index, maxResults); 
+      this.buildResults(term, index, maxResults); 
 
       //Results appear at the top of the page
       $("html, body").animate({ scrollTop: 0 }, "slow");
@@ -65,99 +63,54 @@ define(function (require) {
       //load topics, requires an API query for each topic
       _.each(shuffle, function(topic, count) { 
         if (count <= 3) {
-          self.queryApi('subject:'+topic,index='0', maxResults='5', topic);
+          self.buildResults('subject:'+topic,index='0', maxResults='5', topic);
         } else {
           return;
         }
       }); 
     },
 
-    doAjax: function (url, data) {
-      return $.ajax({
-        dataType: 'jsonp',
-        data: data,
-        url: url
-      });
-    },
-
-    queryApi: function(term, index, maxResults, subject) {
+    buildResults: function(term, index, maxResults, subject) {
       var aj,
           self = this,
           $books = $('#books'),
           url = 'https://www.googleapis.com/books/v1/volumes?',
           data = 'q='+encodeURIComponent(term)+'&startIndex='+index+'&maxResults='+maxResults+'&key='+v.API_KEY+'&projection=full&fields=totalItems,items(id,volumeInfo)',
           moreBtn = '<button data-index="'+index+'" data-term="'+term+'" data-maxresults="'+maxResults+'" class="btn more-button" href="#">&#43; More of these books</button>',
-          dupBtn = moreBtn.length;
+          dupBtn = moreBtn.length,
+          books = new BookCollection();
 
       //Show loading indicator
       $books.addClass('loading');
 
-      aj = this.doAjax(url, data);
+      books.fetch({
+        url: url + data,
+        'success': function success(models, response) {
+          var item = new allBooksView({ collection: models });
+              item.render();
 
-      //jQuery promise object tells us when ajax is done
-      aj.done(function () {
-        var Books = new BookCollection(),
-          data = aj.responseJSON,
-          emptyBooks = 0;
-
-        //Traverse the API response and put each JSON book into a model
-        if (data) {
-
-          //If API quota runs out
-          //give a message
-          data.error = data.error || {};
-          data.error.message = data.error.message || {};
-          if (data.error.message === 'Daily Limit Exceeded') {
-            _.once(self.deadApi(data.error.message));
+          //If a topic and collection isn't empty, 
+          //prepend with the topic title and append a 'more' link
+          if (subject && models.length > 0) {
+            item.topic(subject, maxResults);
           }
 
-          _.each(data.items, function(item) { 
-            //Define JSON values, this prevents ajax errors
-            item.volumeInfo = item.volumeInfo || {};
-            item.volumeInfo.imageLinks = item.volumeInfo.imageLinks || {};
-            item.volumeInfo.imageLinks.thumbnail = item.volumeInfo.imageLinks.thumbnail || '';
-            if (item.volumeInfo.imageLinks.thumbnail) {
-              var book = new BookModel(item);
-              Books.add(book);
-            } else {
-              emptyBooks++;
-            }
-          }); 
-
-          //Some granular searches return empty books, no books, books without images etc.
-          //If that happens, split off the 'subject:', or 'author:' part and
-          //do another query
-          if (emptyBooks > 3 || data.totalItems < 25 && !subject) {
-            var s = term.split(':'),
-                newsearch = s[1];
-            self.queryApi(newsearch,index,maxResults);
+          //If the index is greater then 0 and this isn't topics, 
+          //replace new books with old books. Otherwise APPEND to old books.
+          if (index > 0 || subject) {
+            $books.append(item.el);
           } 
+          else {
+            $books.html(item.el);
+          }
+
+          $books.removeClass('loading');
+        },
+        'error': function error(collection, response, xhr) {
+          if (response.message === 'Daily Limit Exceeded') {
+            _.once(self.deadApi(response.message));
+          }
         }
-
-        //Remove old ajax data
-        aj = '';
-
-        //Instantiate the AllBooksViews with a collection of books and render them
-        var item = new allBooksView({ collection: Books });
-            item.render();
-
-        //If a topic and collection isn't empty, 
-        //prepend with the topic title and append a 'more' link
-        if (subject && Books.length > 0) {
-          item.topic(subject, maxResults);
-        }
-
-        //If the index is greater then 0 and this isn't topics, 
-        //replace new books with old books. Otherwise APPEND to old books.
-        if (index > 0 || subject) {
-          $books.append(item.el);
-        } 
-        else {
-          $books.html(item.el);
-        }
-
-        //Remove loading indicator
-        $books.removeClass('loading');
       });
 
       //Append a 'more' button, except if its topics or 'mybooks'
@@ -180,7 +133,7 @@ define(function (require) {
         maxresults = $btn.data("maxresults"),
         newindex = index + maxresults;
 
-      this.queryApi(term, newindex, maxresults);
+      this.buildResults(term, newindex, maxresults);
       this.undelegate();
     }, 
 
@@ -189,7 +142,7 @@ define(function (require) {
           self = this;
 
       myBooks.fetch({
-        success:function() {
+        success: function() {
           //If there are books in the localStorage collection
           //then load and render them
           if (myBooks.length > 0) {
@@ -240,7 +193,7 @@ define(function (require) {
           },
           select: function( event, ui ) {
             //populate the autocomplete with an API query
-            self.queryApi(ui.item.value, index='0',v.MAX_DEFAULT);
+            self.buildResults(ui.item.value, index='0',v.MAX_DEFAULT);
           },
           //Trigger when the menu is hidden, remove search term
           close: function( event, ui ) {

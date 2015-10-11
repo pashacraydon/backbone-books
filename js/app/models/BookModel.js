@@ -5,8 +5,6 @@ define(function (require) {
 
   BookModel = Backbone.Model.extend({
     defaults: {
-      //Default JSON fields,
-      //Prevent 'undefined' ajax errors
       "volumeInfo": [
       {
         "description": "",

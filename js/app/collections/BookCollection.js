@@ -5,7 +5,10 @@ define(function (require) {
     BookCollection;
 
   BookCollection = Backbone.Collection.extend({
-    model: BookModel
+    model: BookModel,
+    parse: function (response) {
+    	return response.items;
+    }
   });
 
     return BookCollection;
